@@ -14,6 +14,8 @@ from app.database.init_db import init_db
 from app.exchange.bitvavo_public import get_ticker_price
 from fastapi import FastAPI
 from app.core.settings import settings
+from app.risk.manager import RiskManager
+from app.risk.models import RiskContext
 
 app = FastAPI(title="Bitvavo AI Trading Bot")
 
@@ -84,16 +86,42 @@ def momentum_strategy(market: str):
 
 @app.post("/trade/{market}/paper")
 async def paper_trade(market: str):
-    signal = generate_momentum_signal(market.upper())
+    signal = generate_combined_signal(market.upper())
 
-    if signal is None or signal.signal == "HOLD":
+    if signal.signal == "HOLD":
         return {
             "market": market.upper(),
             "executed": False,
-            "reason": "Geen BUY/SELL signaal."
+            "reason": "Geen BUY/SELL signaal.",
+            "signal": signal.signal,
+            "signal_id": signal.id,
+        }
+
+    risk_manager = RiskManager()
+    risk_decision = risk_manager.evaluate(
+        RiskContext(
+            paper_trading=settings.paper_trading,
+            has_open_position=False,
+            daily_loss=0.0,
+            max_daily_loss=settings.max_daily_loss_eur,
+            cooldown_active=False,
+            position_size=settings.max_position_eur,
+            max_position_size=settings.max_position_eur,
+        )
+    )
+
+    if not risk_decision.allowed:
+        return {
+            "market": market.upper(),
+            "executed": False,
+            "reason": risk_decision.reason,
+            "signal": signal.signal,
+            "signal_id": signal.id,
+            "risk_allowed": risk_decision.allowed,
         }
 
     price_data = await get_ticker_price(market.upper())
+
     trade = execute_paper_trade(
         market=market.upper(),
         side=signal.signal,
@@ -108,7 +136,10 @@ async def paper_trade(market: str):
         "side": trade.side,
         "amount_eur": trade.amount_eur,
         "price": trade.price,
+        "signal": signal.signal,
         "signal_id": signal.id,
+        "risk_allowed": risk_decision.allowed,
+        "risk_reason": risk_decision.reason,
     }
 
 @app.get("/overview/signals")
