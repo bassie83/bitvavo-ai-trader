@@ -1,0 +1,31 @@
+services:
+  bot:
+    build: .
+    container_name: bitvavo_ai_bot
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: bitvavo_postgres
+    environment:
+      POSTGRES_DB: tradingbot
+      POSTGRES_USER: tradingbot
+      POSTGRES_PASSWORD: change_me_secure
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    container_name: bitvavo_redis
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
