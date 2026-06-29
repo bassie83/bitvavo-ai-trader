@@ -21,11 +21,12 @@ def generate_combined_signal(market: str) -> TradeSignal:
             signal = "HOLD"
 
         if signal == "BUY":
-    confidence = score / 100
-elif signal == "SELL":
-    confidence = (100 - score) / 100
-else:
-    confidence = 1 - abs(score - 50) / 50
+            confidence = score / 100
+        elif signal == "SELL":
+            confidence = (100 - score) / 100
+        else:
+            confidence = 1 - abs(score - 50) / 50
+
         reason = (
             f"Score {score}/100. "
             f"Advies: {analysis['advice']}. "
