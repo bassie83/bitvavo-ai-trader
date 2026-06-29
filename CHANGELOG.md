@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.3.0 - Risk Manager v1
+
+**Release Date:** 2026-06-29
+
+### Added
+- Daily loss protection
+- Cooldown after losing trade
+- Position size protection
+
+### Improved
+- Expanded RiskContext for advanced risk controls
+- RiskManager now evaluates multiple sequential risk rules
+- Improved automated test coverage
+
+### Testing
+- 9 automated pytest tests passing
+- Docker-based test environment
+- Health check verified
+- Clean Git working tree
+
+### Status
+Risk Manager v1 completed and ready for integration into the trading flow.
 ---
 
 # v0.2.0 - Risk Manager Foundation
