@@ -33,3 +33,39 @@ def check_open_position(has_open_position: bool) -> RiskDecision:
         allowed=True,
         reason="No open position.",
     )
+
+def check_daily_loss(
+    daily_loss: float,
+    max_daily_loss: float,
+) -> RiskDecision:
+    """
+    Blokkeert nieuwe trades als de maximale dagverlieslimiet is bereikt.
+    """
+
+    if daily_loss >= max_daily_loss:
+        return RiskDecision(
+            allowed=False,
+            reason="Maximum daily loss reached.",
+        )
+
+    return RiskDecision(
+        allowed=True,
+        reason="Daily loss within limit.",
+    )
+
+
+def check_cooldown(cooldown_active: bool) -> RiskDecision:
+    """
+    Blokkeert nieuwe trades als cooldown actief is.
+    """
+
+    if cooldown_active:
+        return RiskDecision(
+            allowed=False,
+            reason="Cooldown is active.",
+        )
+
+    return RiskDecision(
+        allowed=True,
+        reason="Cooldown inactive.",
+    )

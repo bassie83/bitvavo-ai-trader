@@ -1,7 +1,9 @@
 from app.risk.models import RiskDecision, RiskContext
 from app.risk.rules import (
+    check_daily_loss,
     check_open_position,
     check_paper_trading,
+    check_cooldown,
 )
 
 
@@ -20,6 +22,17 @@ class RiskManager:
             return decision
 
         decision = check_open_position(context.has_open_position)
+        if not decision.allowed:
+            return decision
+
+        decision = check_daily_loss(
+            context.daily_loss,
+            context.max_daily_loss,
+        )
+        if not decision.allowed:
+            return decision
+
+        decision = check_cooldown(context.cooldown_active)
         if not decision.allowed:
             return decision
 

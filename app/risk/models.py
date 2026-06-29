@@ -19,3 +19,6 @@ class RiskContext:
 
     paper_trading: bool
     has_open_position: bool = False
+    daily_loss: float = 0.0
+    max_daily_loss: float = 100.0
+    cooldown_active: bool = False
