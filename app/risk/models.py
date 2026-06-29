@@ -9,3 +9,13 @@ class RiskDecision:
 
     allowed: bool
     reason: str
+
+
+@dataclass
+class RiskContext:
+    """
+    Context die de Risk Manager nodig heeft om een beslissing te nemen.
+    """
+
+    paper_trading: bool
+    has_open_position: bool = False
