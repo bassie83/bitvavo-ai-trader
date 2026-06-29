@@ -22,3 +22,5 @@ class RiskContext:
     daily_loss: float = 0.0
     max_daily_loss: float = 100.0
     cooldown_active: bool = False
+    position_size: float = 0.0
+    max_position_size: float = 1000.0

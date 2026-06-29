@@ -104,3 +104,40 @@ def test_risk_manager_blocks_when_cooldown_active():
 
     assert result.allowed is False
     assert result.reason == "Cooldown is active."
+
+
+def test_risk_manager_allows_when_position_size_within_limit():
+    manager = RiskManager()
+
+    result = manager.evaluate(
+        RiskContext(
+            paper_trading=True,
+            has_open_position=False,
+            daily_loss=0.0,
+            max_daily_loss=100.0,
+            cooldown_active=False,
+            position_size=500.0,
+            max_position_size=1000.0,
+        )
+    )
+
+    assert result.allowed is True
+
+
+def test_risk_manager_blocks_when_position_size_exceeds_limit():
+    manager = RiskManager()
+
+    result = manager.evaluate(
+        RiskContext(
+            paper_trading=True,
+            has_open_position=False,
+            daily_loss=0.0,
+            max_daily_loss=100.0,
+            cooldown_active=False,
+            position_size=1500.0,
+            max_position_size=1000.0,
+        )
+    )
+
+    assert result.allowed is False
+    assert result.reason == "Maximum position size exceeded."

@@ -69,3 +69,23 @@ def check_cooldown(cooldown_active: bool) -> RiskDecision:
         allowed=True,
         reason="Cooldown inactive.",
     )
+
+
+def check_position_size(
+    position_size: float,
+    max_position_size: float,
+) -> RiskDecision:
+    """
+    Blokkeert trades groter dan de maximale positiegrootte.
+    """
+
+    if position_size > max_position_size:
+        return RiskDecision(
+            allowed=False,
+            reason="Maximum position size exceeded.",
+        )
+
+    return RiskDecision(
+        allowed=True,
+        reason="Position size within limit.",
+    )

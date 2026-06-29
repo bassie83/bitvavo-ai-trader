@@ -4,6 +4,7 @@ from app.risk.rules import (
     check_open_position,
     check_paper_trading,
     check_cooldown,
+    check_position_size,
 )
 
 
@@ -33,6 +34,13 @@ class RiskManager:
             return decision
 
         decision = check_cooldown(context.cooldown_active)
+        if not decision.allowed:
+            return decision
+
+        decision = check_position_size(
+            context.position_size,
+            context.max_position_size,
+        )
         if not decision.allowed:
             return decision
 
