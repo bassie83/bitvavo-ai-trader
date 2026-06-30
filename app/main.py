@@ -1,3 +1,4 @@
+from pathlib import Path
 from app.trading_loop import trading_loop
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -253,8 +254,7 @@ async def dashboard(request: Request):
             FROM paper_trades
         """)).scalar()
 
-        risk_manager = RiskManager()
-        risk_decision = risk_manager.evaluate(
+        risk_decision = RiskManager().evaluate(
             RiskContext(
                 paper_trading=settings.paper_trading,
                 has_open_position=False,
@@ -265,6 +265,12 @@ async def dashboard(request: Request):
                 max_position_size=settings.max_position_eur,
             )
         )
+
+        status_file = Path("/tmp/trading_loop_status.txt")
+        if status_file.exists():
+            last_loop_run = status_file.read_text().strip()
+        else:
+            last_loop_run = None
 
         return templates.TemplateResponse(
             request=request,
@@ -277,6 +283,7 @@ async def dashboard(request: Request):
                 "latest_price": latest_price,
                 "paper_trade_count": paper_trade_count,
                 "risk_decision": risk_decision,
+                "last_loop_run": last_loop_run,
             },
         )
     finally:

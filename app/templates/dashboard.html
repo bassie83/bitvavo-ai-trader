@@ -65,7 +65,7 @@
                 Disabled
             {% endif %}
         </p>
-
+</div>
     <div class="card">
         <h2>Risk Manager</h2>
 
@@ -77,8 +77,21 @@
 
         <p>Allowed: {{ risk_decision.allowed }}</p>
         <p class="muted">{{ risk_decision.reason }}</p>
+     </div>
+
+     <div class="card">
+    <h2>Trading Loop</h2>
+
+    {% if last_loop_run %}
+        <p class="big ok">ACTIVE</p>
+        <p>Last heartbeat:</p>
+        <p class="muted">{{ last_loop_run }}</p>
+    {% else %}
+        <p class="big">UNKNOWN</p>
+        <p class="muted">Nog geen heartbeat ontvangen.</p>
+    {% endif %}
 </div>
-    </div>
+
 
     <div class="card">
         <h2>Laatste Signaal</h2>

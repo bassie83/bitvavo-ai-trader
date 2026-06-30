@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 
 from app.core.settings import settings
 from app.exchange.bitvavo_public import get_ticker_price
@@ -11,18 +12,16 @@ from app.trading_executor import execute_paper_trade
 async def trading_loop():
     """
     Automatische paper trading-loop.
-
-    Eerste echte versie:
-    - draait elke 60 seconden
-    - genereert een combined signal
-    - controleert Risk Manager
-    - voert alleen paper trade uit bij BUY/SELL + ALLOW
     """
 
     while True:
         try:
             market = "BTC-EUR"
+
             print("🤖 Trading loop heartbeat: running", flush=True)
+
+            with open("/tmp/trading_loop_status.txt", "w") as status_file:
+                status_file.write(datetime.utcnow().isoformat())
 
             signal = generate_combined_signal(market)
 
@@ -31,8 +30,7 @@ async def trading_loop():
                 await asyncio.sleep(60)
                 continue
 
-            risk_manager = RiskManager()
-            risk_decision = risk_manager.evaluate(
+            risk_decision = RiskManager().evaluate(
                 RiskContext(
                     paper_trading=settings.paper_trading,
                     has_open_position=False,
@@ -46,7 +44,7 @@ async def trading_loop():
 
             if not risk_decision.allowed:
                 print(
-                    f"🛡️ Trading loop: trade blocked - {risk_decision.reason}",
+                    f"🛡️ Trading loop: blocked - {risk_decision.reason}",
                     flush=True,
                 )
                 await asyncio.sleep(60)
@@ -61,8 +59,7 @@ async def trading_loop():
             )
 
             print(
-                f"✅ Paper trade executed: {trade.side} {trade.market} "
-                f"€{trade.amount_eur} @ {trade.price}",
+                f"✅ Paper trade executed: {trade.side} {trade.market}",
                 flush=True,
             )
 
