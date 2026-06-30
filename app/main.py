@@ -1,3 +1,4 @@
+from app.trading_loop import trading_loop
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
@@ -28,6 +29,7 @@ def on_startup():
     init_db()
     asyncio.create_task(market_collector_loop())
     asyncio.create_task(hourly_report_loop())
+    asyncio.create_task(trading_loop())
 
 @app.get("/")
 def home():
