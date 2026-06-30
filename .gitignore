@@ -5,3 +5,4 @@ logs/
 data/
 postgres_data/
 .venv/
+backups/
