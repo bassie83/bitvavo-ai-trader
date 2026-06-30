@@ -289,3 +289,24 @@ async def dashboard(request: Request):
         )
     finally:
         db.close()
+
+@app.post("/trade/{market}/test-sell")
+async def test_sell_trade(market: str):
+    price_data = await get_ticker_price(market.upper())
+
+    trade = execute_paper_trade(
+        market=market.upper(),
+        side="SELL",
+        price=float(price_data["price"]),
+    )
+
+    return {
+        "executed": True,
+        "paper_trade": True,
+        "test_mode": True,
+        "trade_id": trade.id,
+        "market": trade.market,
+        "side": trade.side,
+        "amount_eur": trade.amount_eur,
+        "price": trade.price,
+    }

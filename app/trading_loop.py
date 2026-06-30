@@ -49,6 +49,11 @@ async def trading_loop():
                 await asyncio.sleep(60)
                 continue
 
+            if signal.signal == "SELL" and not has_open_position(market):
+                print("⏸️ Trading loop: SELL signal, but no open position", flush=True)
+                await asyncio.sleep(60)
+                continue
+
             risk_decision = RiskManager().evaluate(
                 RiskContext(
                     paper_trading=settings.paper_trading,
