@@ -1,6 +1,7 @@
+from sqlalchemy import text
+from app.database.session import SessionLocal
 import asyncio
 from datetime import datetime
-
 from app.core.settings import settings
 from app.exchange.bitvavo_public import get_ticker_price
 from app.risk.manager import RiskManager
@@ -8,6 +9,24 @@ from app.risk.models import RiskContext
 from app.strategies.signal_engine import generate_combined_signal
 from app.trading_executor import execute_paper_trade
 
+def has_open_position(market: str) -> bool:
+    db = SessionLocal()
+    try:
+        buys = db.execute(text("""
+            SELECT COUNT(*)
+            FROM paper_trades
+            WHERE market = :market AND side = 'BUY'
+        """), {"market": market}).scalar()
+
+        sells = db.execute(text("""
+            SELECT COUNT(*)
+            FROM paper_trades
+            WHERE market = :market AND side = 'SELL'
+        """), {"market": market}).scalar()
+
+        return buys > sells
+    finally:
+        db.close()
 
 async def trading_loop():
     """
@@ -33,7 +52,10 @@ async def trading_loop():
             risk_decision = RiskManager().evaluate(
                 RiskContext(
                     paper_trading=settings.paper_trading,
-                    has_open_position=False,
+                    has_open_position=(
+                        signal.signal == "BUY"
+                        and has_open_position(market)
+                    ),
                     daily_loss=0.0,
                     max_daily_loss=settings.max_daily_loss_eur,
                     cooldown_active=False,
