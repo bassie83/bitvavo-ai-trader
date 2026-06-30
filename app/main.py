@@ -284,6 +284,7 @@ async def dashboard(request: Request):
                 "paper_trade_count": paper_trade_count,
                 "risk_decision": risk_decision,
                 "last_loop_run": last_loop_run,
+                "max_position_eur": settings.max_position_eur,
             },
         )
     finally:

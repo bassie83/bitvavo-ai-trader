@@ -137,7 +137,26 @@
 
         {% endif %}
     </div>
+    <div class="card">
+    <h2>Portfolio</h2>
 
+    <p class="big">{{ paper_trade_count }}</p>
+    <p>Paper trades uitgevoerd</p>
+
+    <hr>
+
+    <p>Max positie:</p>
+    <p>€{{ max_position_eur }}</p>
+
+    {% if latest_trade %}
+        <hr>
+        <p>Laatste trade:</p>
+        <p>
+            {{ latest_trade[2] }}
+            {{ latest_trade[1] }}
+        </p>
+    {% endif %}
+</div>
 </div>
 
 </body>
