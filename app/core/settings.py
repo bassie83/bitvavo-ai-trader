@@ -5,6 +5,7 @@ from pydantic import Field
 class Settings(BaseSettings):
     app_env: str = "development"
     paper_trading: bool = True
+    paper_start_balance_eur: float = 1000.0
 
     bitvavo_api_key: str = ""
     bitvavo_api_secret: str = ""

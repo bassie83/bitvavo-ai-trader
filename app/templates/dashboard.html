@@ -53,6 +53,43 @@
 
 <div class="grid">
 
+<div class="card">
+    <h2>Portfolio</h2>
+
+    <p>Huidige waarde</p>
+    <p class="big">€{{ "%.2f"|format(portfolio_value) }}</p>
+
+    <p>Groei</p>
+    <p>{{ "%.2f"|format(portfolio_growth_percent) }}%</p>
+
+    <p>Resultaat</p>
+    <p>€{{ "%.2f"|format(portfolio_pnl) }}</p>
+
+    <hr>
+
+    <p>Cash: €{{ "%.2f"|format(cash_balance) }}</p>
+    <p>Open positie: €{{ "%.2f"|format(open_position_value) }}</p>
+</div>
+
+<div class="card">
+    <h2>Trading</h2>
+
+    <p>Trades</p>
+    <p class="big">{{ paper_trade_count }}</p>
+
+    <p>Max positie</p>
+    <p>€{{ "%.2f"|format(max_position_eur) }}</p>
+
+    <hr>
+
+    {% if latest_trade %}
+        <p>Laatste trade</p>
+        <p>{{ latest_trade[2] }} {{ latest_trade[1] }}</p>
+    {% else %}
+        <p class="muted">Nog geen trades.</p>
+    {% endif %}
+</div>
+
     <div class="card">
         <h2>Systeemstatus</h2>
         <p>Bot: <span class="ok">Running</span></p>
@@ -137,26 +174,6 @@
 
         {% endif %}
     </div>
-    <div class="card">
-    <h2>Portfolio</h2>
-
-    <p class="big">{{ paper_trade_count }}</p>
-    <p>Paper trades uitgevoerd</p>
-
-    <hr>
-
-    <p>Max positie:</p>
-    <p>€{{ max_position_eur }}</p>
-
-    {% if latest_trade %}
-        <hr>
-        <p>Laatste trade:</p>
-        <p>
-            {{ latest_trade[2] }}
-            {{ latest_trade[1] }}
-        </p>
-    {% endif %}
-</div>
 </div>
 
 </body>
