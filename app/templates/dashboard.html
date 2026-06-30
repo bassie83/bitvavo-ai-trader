@@ -64,6 +64,19 @@
                 Disabled
             {% endif %}
         </p>
+
+    <div class="card">
+        <h2>Risk Manager</h2>
+
+        {% if risk_decision.allowed %}
+            <p class="big ok">PASSED</p>
+        {% else %}
+            <p class="big">BLOCKED</p>
+        {% endif %}
+
+        <p>Allowed: {{ risk_decision.allowed }}</p>
+        <p class="muted">{{ risk_decision.reason }}</p>
+</div>
     </div>
 
     <div class="card">

@@ -251,6 +251,19 @@ async def dashboard(request: Request):
             FROM paper_trades
         """)).scalar()
 
+        risk_manager = RiskManager()
+        risk_decision = risk_manager.evaluate(
+            RiskContext(
+                paper_trading=settings.paper_trading,
+                has_open_position=False,
+                daily_loss=0.0,
+                max_daily_loss=settings.max_daily_loss_eur,
+                cooldown_active=False,
+                position_size=settings.max_position_eur,
+                max_position_size=settings.max_position_eur,
+            )
+        )
+
         return templates.TemplateResponse(
             request=request,
             name="dashboard.html",
@@ -261,6 +274,7 @@ async def dashboard(request: Request):
                 "latest_trade": latest_trade,
                 "latest_price": latest_price,
                 "paper_trade_count": paper_trade_count,
+                "risk_decision": risk_decision,
             },
         )
     finally:
