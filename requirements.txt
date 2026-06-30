@@ -7,3 +7,4 @@ httpx
 redis
 psycopg[binary]
 sqlalchemy
+jinja2

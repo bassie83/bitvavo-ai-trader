@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+
+    <style>
+        body {
+            background: #0f172a;
+            color: #e5e7eb;
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h1 {
+            color: #38bdf8;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .ok {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .muted {
+            color: #94a3b8;
+        }
+
+        .big {
+            font-size: 28px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🚀 Project Atlas</h1>
+<p class="muted">Dashboard v1</p>
+
+<div class="grid">
+
+    <div class="card">
+        <h2>Systeemstatus</h2>
+        <p>Bot: <span class="ok">Running</span></p>
+
+        <p>
+            Paper Trading:
+            {% if paper_trading %}
+                <span class="ok">Enabled</span>
+            {% else %}
+                Disabled
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Laatste Signaal</h2>
+
+        {% if latest_signal %}
+            <p class="big">{{ latest_signal[2] }}</p>
+
+            <p>Market: {{ latest_signal[1] }}</p>
+
+            <p>Confidence: {{ latest_signal[3] }}</p>
+
+            <p class="muted">{{ latest_signal[4] }}</p>
+
+            <p class="muted">{{ latest_signal[5] }}</p>
+
+        {% else %}
+
+            <p class="muted">Nog geen signalen.</p>
+
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Laatste Paper Trade</h2>
+
+        {% if latest_trade %}
+
+            <p class="big">{{ latest_trade[2] }}</p>
+
+            <p>Market: {{ latest_trade[1] }}</p>
+
+            <p>Amount: €{{ latest_trade[3] }}</p>
+
+            <p>Price: {{ latest_trade[4] }}</p>
+
+            <p>Executed: {{ latest_trade[5] }}</p>
+
+            <p class="muted">{{ latest_trade[6] }}</p>
+
+        {% else %}
+
+            <p class="muted">Nog geen paper trades.</p>
+
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>

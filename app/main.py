@@ -1,3 +1,6 @@
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
 from app.strategies.signal_engine import generate_combined_signal
 from app.strategies.indicators import calculate_trend_score
 from app.telegram.hourly_report import hourly_report_loop
@@ -18,6 +21,7 @@ from app.risk.manager import RiskManager
 from app.risk.models import RiskContext
 
 app = FastAPI(title="Bitvavo AI Trading Bot")
+templates = Jinja2Templates(directory="app/templates")
 
 @app.on_event("startup")
 def on_startup():
@@ -215,3 +219,49 @@ def combined_signal(market: str):
         "reason": signal.reason,
         "signal_id": signal.id,
     }
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    db = SessionLocal()
+    try:
+        latest_signal = db.execute(text("""
+            SELECT id, market, signal, confidence, reason, created_at
+            FROM trade_signals
+            ORDER BY id DESC
+            LIMIT 1
+        """)).fetchone()
+
+        latest_trade = db.execute(text("""
+            SELECT id, market, side, amount_eur, price, executed, created_at
+            FROM paper_trades
+            ORDER BY id DESC
+            LIMIT 1
+        """)).fetchone()
+
+        latest_price = db.execute(text("""
+            SELECT market, price, created_at
+            FROM price_ticks
+            ORDER BY id DESC
+            LIMIT 1
+        """)).fetchone()
+
+        paper_trade_count = db.execute(text("""
+            SELECT COUNT(*)
+            FROM paper_trades
+        """)).scalar()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="dashboard.html",
+            context={
+                "title": "Project Atlas Dashboard",
+                "paper_trading": settings.paper_trading,
+                "latest_signal": latest_signal,
+                "latest_trade": latest_trade,
+                "latest_price": latest_price,
+                "paper_trade_count": paper_trade_count,
+            },
+        )
+    finally:
+        db.close()
