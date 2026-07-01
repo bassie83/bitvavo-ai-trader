@@ -191,6 +191,27 @@
 
             {% endif %}
         </div>
+
+        <div class="card">
+            <h2>Equity</h2>
+
+            {% if equity_points %}
+            {% set last_equity = equity_points[-1]["equity"] %}
+            {% set last_pnl = equity_points[-1]["pnl"] %}
+
+            <p>Laatste equity</p>
+            <p class="big">€{{ "%.2f"|format(last_equity) }}</p>
+
+            <p>Laatste gesloten trade</p>
+            <p>€{{ "%.2f"|format(last_pnl) }}</p>
+
+            <p>Datapunten</p>
+            <p>{{ equity_points|length }}</p>
+            {% else %}
+            <p class="muted">Nog geen gesloten trades.</p>
+            {% endif %}
+        </div>
+
     </div>
 
 </body>

@@ -1,3 +1,4 @@
+from app.analytics.equity import calculate_equity_points
 from app.analytics.portfolio import calculate_portfolio
 from app.analytics.performance import calculate_performance
 from pathlib import Path
@@ -276,6 +277,7 @@ async def dashboard(request: Request):
         has_open_position = portfolio["has_open_position"]
 
         performance = calculate_performance(db)
+        equity_points = calculate_equity_points(db, settings)
 
         closed_trades = performance["closed_trades"]
         total_pnl_eur = performance["total_pnl_eur"]
@@ -323,6 +325,7 @@ async def dashboard(request: Request):
                 "total_pnl_eur": total_pnl_eur,
                 "avg_pnl_eur": avg_pnl_eur,
                 "winrate": winrate,
+                "equity_points": equity_points,
             },
         )
     finally:
