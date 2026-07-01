@@ -219,7 +219,10 @@
         const equityPoints = {{ equity_points | tojson }};
 
         if (equityPoints.length > 0) {
-            const labels = equityPoints.map(point => `Trade ${point.trade_id}`);
+            const labels = equityPoints.map(point =>
+                point.trade_id === 0 ? "Start" : `Trade ${point.trade_id}`
+            );
+
             const values = equityPoints.map(point => point.equity);
 
             const ctx = document.getElementById("equityChart");
@@ -231,7 +234,9 @@
                     datasets: [{
                         label: "Equity (€)",
                         data: values,
-                        tension: 0.25
+                        tension: 0.25,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
@@ -239,6 +244,17 @@
                     plugins: {
                         legend: {
                             display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function (context) {
+                                    const point = equityPoints[context.dataIndex];
+                                    return [
+                                        `Datum: ${point.created_at}`,
+                                        `Trade P&L: €${point.pnl.toFixed(2)}`
+                                    ];
+                                }
+                            }
                         }
                     }
                 }

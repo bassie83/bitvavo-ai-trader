@@ -15,7 +15,15 @@ def calculate_equity_points(db, settings, market: str = "BTC-EUR") -> list[dict]
     equity = settings.paper_start_balance_eur
     open_buy_price = None
     open_amount_eur = None
-    points = []
+
+    points = [
+        {
+            "trade_id": 0,
+            "created_at": "Start",
+            "equity": equity,
+            "pnl": 0.0,
+        }
+    ]
 
     for row in rows:
         trade_id, created_at, side, amount_eur, price = row
