@@ -31,6 +31,23 @@
             border: 1px solid #334155;
         }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 4px 6px;
+            white-space: nowrap;
+        }
+
+        .card {
+            overflow-x: auto;
+        }
+
         .ok {
             color: #22c55e;
             font-weight: bold;
@@ -87,6 +104,49 @@
 
             <p>Gemiddelde trade</p>
             <p>€{{ "%.2f"|format(avg_pnl_eur) }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Laatste Trades</h2>
+
+            {% if latest_trades %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tijd</th>
+                        <th>Actie</th>
+                        <th>Prijs</th>
+                        <th>Bedrag</th>
+                        <th>P&L</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trade in latest_trades %}
+                    <tr>
+                        <td>{{ trade["created_at"].strftime("%H:%M") }}</td>
+                        <td>
+                            {% if trade["side"] == "BUY" %}
+                            🟢 BUY
+                            {% else %}
+                            🔴 SELL
+                            {% endif %}
+                        </td>
+                        <td>€{{ "%.2f"|format(trade["price"]) }}</td>
+                        <td>€{{ "%.2f"|format(trade["amount_eur"]) }}</td>
+                        <td>
+                            {% if trade["pnl_eur"] is not none %}
+                            €{{ "%.2f"|format(trade["pnl_eur"]) }}
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="muted">Nog geen trades.</p>
+            {% endif %}
         </div>
 
         <div class="card">
@@ -195,6 +255,16 @@
 
         <div class="card">
             <h2>Equity</h2>
+            <p>Current</p>
+            <p class="big">€{{ "%.2f"|format(equity_summary["current"]) }}</p>
+
+            <p>Highest</p>
+            <p>€{{ "%.2f"|format(equity_summary["highest"]) }}</p>
+
+            <p>Lowest</p>
+            <p>€{{ "%.2f"|format(equity_summary["lowest"]) }}</p>
+
+            <hr>
 
             {% if equity_points %}
             {% set last_equity = equity_points[-1]["equity"] %}
