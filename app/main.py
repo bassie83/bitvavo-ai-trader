@@ -1,4 +1,5 @@
-from app.analytics.equity import calculate_equity_points
+from app.analytics.trade_history import get_latest_trades
+from app.analytics.equity import calculate_equity_points, calculate_equity_summary
 from app.analytics.portfolio import calculate_portfolio
 from app.analytics.performance import calculate_performance
 from pathlib import Path
@@ -262,6 +263,8 @@ async def dashboard(request: Request):
             LIMIT 1
         """)).fetchone()
 
+        latest_trades = get_latest_trades(db)
+
         paper_trade_count = db.execute(text("""
             SELECT COUNT(*)
             FROM paper_trades
@@ -278,6 +281,7 @@ async def dashboard(request: Request):
 
         performance = calculate_performance(db)
         equity_points = calculate_equity_points(db, settings)
+        equity_summary = calculate_equity_summary(equity_points)
 
         closed_trades = performance["closed_trades"]
         total_pnl_eur = performance["total_pnl_eur"]
@@ -326,6 +330,8 @@ async def dashboard(request: Request):
                 "avg_pnl_eur": avg_pnl_eur,
                 "winrate": winrate,
                 "equity_points": equity_points,
+                "equity_summary": equity_summary,
+                "latest_trades": latest_trades,
             },
         )
     finally:
