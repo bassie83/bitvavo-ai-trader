@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
     <meta charset="UTF-8">
     <title>{{ title }}</title>
@@ -48,92 +49,108 @@
 
 <body>
 
-<h1>🚀 Project Atlas</h1>
-<p class="muted">Dashboard v1</p>
+    <h1>🚀 Project Atlas</h1>
+    <p class="muted">Dashboard v1</p>
 
-<div class="grid">
+    <div class="grid">
 
-<div class="card">
-    <h2>Portfolio</h2>
+        <div class="card">
+            <h2>Portfolio</h2>
 
-    <p>Huidige waarde</p>
-    <p class="big">€{{ "%.2f"|format(portfolio_value) }}</p>
+            <p>Huidige waarde</p>
+            <p class="big">€{{ "%.2f"|format(portfolio_value) }}</p>
 
-    <p>Groei</p>
-    <p>{{ "%.2f"|format(portfolio_growth_percent) }}%</p>
+            <p>Groei</p>
+            <p>{{ "%.2f"|format(portfolio_growth_percent) }}%</p>
 
-    <p>Resultaat</p>
-    <p>€{{ "%.2f"|format(portfolio_pnl) }}</p>
+            <p>Resultaat</p>
+            <p>€{{ "%.2f"|format(portfolio_pnl) }}</p>
 
-    <hr>
+            <hr>
 
-    <p>Cash: €{{ "%.2f"|format(cash_balance) }}</p>
-    <p>Open positie: €{{ "%.2f"|format(open_position_value) }}</p>
-</div>
+            <p>Cash: €{{ "%.2f"|format(cash_balance) }}</p>
+            <p>Open positie: €{{ "%.2f"|format(open_position_value) }}</p>
+        </div>
 
-<div class="card">
-    <h2>Trading</h2>
+        <div class="card">
+            <h2>Performance</h2>
 
-    <p>Trades</p>
-    <p class="big">{{ paper_trade_count }}</p>
+            <p>Gesloten trades</p>
+            <p class="big">{{ closed_trades }}</p>
 
-    <p>Max positie</p>
-    <p>€{{ "%.2f"|format(max_position_eur) }}</p>
+            <p>Winrate</p>
+            <p>{{ "%.2f"|format(winrate) }}%</p>
 
-    <hr>
+            <p>Totale P&L</p>
+            <p>€{{ "%.2f"|format(total_pnl_eur) }}</p>
 
-    {% if latest_trade %}
-        <p>Laatste trade</p>
-        <p>{{ latest_trade[2] }} {{ latest_trade[1] }}</p>
-    {% else %}
-        <p class="muted">Nog geen trades.</p>
-    {% endif %}
-</div>
+            <p>Gemiddelde trade</p>
+            <p>€{{ "%.2f"|format(avg_pnl_eur) }}</p>
+        </div>
 
-    <div class="card">
-        <h2>Systeemstatus</h2>
-        <p>Bot: <span class="ok">Running</span></p>
+        <div class="card">
+            <h2>Trading</h2>
 
-        <p>
-            Paper Trading:
-            {% if paper_trading %}
-                <span class="ok">Enabled</span>
+            <p>Trades</p>
+            <p class="big">{{ paper_trade_count }}</p>
+
+            <p>Max positie</p>
+            <p>€{{ "%.2f"|format(max_position_eur) }}</p>
+
+            <hr>
+
+            {% if latest_trade %}
+            <p>Laatste trade</p>
+            <p>{{ latest_trade[2] }} {{ latest_trade[1] }}</p>
             {% else %}
-                Disabled
+            <p class="muted">Nog geen trades.</p>
             {% endif %}
-        </p>
-</div>
-    <div class="card">
-        <h2>Risk Manager</h2>
+        </div>
 
-        {% if risk_decision.allowed %}
+        <div class="card">
+            <h2>Systeemstatus</h2>
+            <p>Bot: <span class="ok">Running</span></p>
+
+            <p>
+                Paper Trading:
+                {% if paper_trading %}
+                <span class="ok">Enabled</span>
+                {% else %}
+                Disabled
+                {% endif %}
+            </p>
+        </div>
+        <div class="card">
+            <h2>Risk Manager</h2>
+
+            {% if risk_decision.allowed %}
             <p class="big ok">PASSED</p>
-        {% else %}
+            {% else %}
             <p class="big">BLOCKED</p>
-        {% endif %}
+            {% endif %}
 
-        <p>Allowed: {{ risk_decision.allowed }}</p>
-        <p class="muted">{{ risk_decision.reason }}</p>
-     </div>
+            <p>Allowed: {{ risk_decision.allowed }}</p>
+            <p class="muted">{{ risk_decision.reason }}</p>
+        </div>
 
-     <div class="card">
-    <h2>Trading Loop</h2>
+        <div class="card">
+            <h2>Trading Loop</h2>
 
-    {% if last_loop_run %}
-        <p class="big ok">ACTIVE</p>
-        <p>Last heartbeat:</p>
-        <p class="muted">{{ last_loop_run }}</p>
-    {% else %}
-        <p class="big">UNKNOWN</p>
-        <p class="muted">Nog geen heartbeat ontvangen.</p>
-    {% endif %}
-</div>
+            {% if last_loop_run %}
+            <p class="big ok">ACTIVE</p>
+            <p>Last heartbeat:</p>
+            <p class="muted">{{ last_loop_run }}</p>
+            {% else %}
+            <p class="big">UNKNOWN</p>
+            <p class="muted">Nog geen heartbeat ontvangen.</p>
+            {% endif %}
+        </div>
 
 
-    <div class="card">
-        <h2>Laatste Signaal</h2>
+        <div class="card">
+            <h2>Laatste Signaal</h2>
 
-        {% if latest_signal %}
+            {% if latest_signal %}
             <p class="big">{{ latest_signal[2] }}</p>
 
             <p>Market: {{ latest_signal[1] }}</p>
@@ -144,17 +161,17 @@
 
             <p class="muted">{{ latest_signal[5] }}</p>
 
-        {% else %}
+            {% else %}
 
             <p class="muted">Nog geen signalen.</p>
 
-        {% endif %}
-    </div>
+            {% endif %}
+        </div>
 
-    <div class="card">
-        <h2>Laatste Paper Trade</h2>
+        <div class="card">
+            <h2>Laatste Paper Trade</h2>
 
-        {% if latest_trade %}
+            {% if latest_trade %}
 
             <p class="big">{{ latest_trade[2] }}</p>
 
@@ -168,13 +185,14 @@
 
             <p class="muted">{{ latest_trade[6] }}</p>
 
-        {% else %}
+            {% else %}
 
             <p class="muted">Nog geen paper trades.</p>
 
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
-</div>
 
 </body>
+
 </html>

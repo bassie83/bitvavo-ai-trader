@@ -25,12 +25,14 @@ from app.risk.models import RiskContext
 app = FastAPI(title="Bitvavo AI Trading Bot")
 templates = Jinja2Templates(directory="app/templates")
 
+
 @app.on_event("startup")
 def on_startup():
     init_db()
     asyncio.create_task(market_collector_loop())
     asyncio.create_task(hourly_report_loop())
     asyncio.create_task(trading_loop())
+
 
 @app.get("/")
 def home():
@@ -60,6 +62,8 @@ def safety_config():
         "max_daily_loss_eur": settings.max_daily_loss_eur,
         "risk_per_trade_percent": settings.risk_per_trade_percent,
     }
+
+
 @app.get("/market/{market}/price")
 async def market_price(market: str):
     data = await get_ticker_price(market.upper())
@@ -72,6 +76,7 @@ async def market_price(market: str):
         "tick_id": tick.id,
     }
 
+
 @app.get("/strategy/{market}/momentum")
 def momentum_strategy(market: str):
     signal = generate_momentum_signal(market.upper())
@@ -80,7 +85,7 @@ def momentum_strategy(market: str):
         return {
             "market": market.upper(),
             "signal": "WAIT",
-            "reason": "Nog niet genoeg prijsdata."
+            "reason": "Nog niet genoeg prijsdata.",
         }
 
     return {
@@ -90,6 +95,7 @@ def momentum_strategy(market: str):
         "reason": signal.reason,
         "signal_id": signal.id,
     }
+
 
 @app.post("/trade/{market}/paper")
 async def paper_trade(market: str):
@@ -149,6 +155,7 @@ async def paper_trade(market: str):
         "risk_reason": risk_decision.reason,
     }
 
+
 @app.get("/overview/signals")
 def latest_signals():
     db = SessionLocal()
@@ -201,6 +208,7 @@ def latest_paper_trades():
     finally:
         db.close()
 
+
 @app.post("/telegram/test")
 async def telegram_test():
     result = await send_telegram_message(
@@ -208,9 +216,11 @@ async def telegram_test():
     )
     return result
 
+
 @app.get("/analysis/{market}/trend")
 def trend_analysis(market: str):
     return calculate_trend_score(market.upper())
+
 
 @app.get("/signal/{market}/combined")
 def combined_signal(market: str):
@@ -254,24 +264,6 @@ async def dashboard(request: Request):
             FROM paper_trades
         """)).scalar()
 
-        risk_decision = RiskManager().evaluate(
-            RiskContext(
-                paper_trading=settings.paper_trading,
-                has_open_position=False,
-                daily_loss=0.0,
-                max_daily_loss=settings.max_daily_loss_eur,
-                cooldown_active=False,
-                position_size=settings.max_position_eur,
-                max_position_size=settings.max_position_eur,
-            )
-        )
-
-        status_file = Path("/tmp/trading_loop_status.txt")
-        if status_file.exists():
-            last_loop_run = status_file.read_text().strip()
-        else:
-            last_loop_run = None
-
         buys_total = db.execute(text("""
             SELECT COALESCE(SUM(amount_eur), 0)
             FROM paper_trades
@@ -285,34 +277,86 @@ async def dashboard(request: Request):
         """)).scalar()
 
         cash_balance = (
-            settings.paper_start_balance_eur
-            - float(buys_total)
-            + float(sells_total)
+            settings.paper_start_balance_eur - float(buys_total) + float(sells_total)
         )
 
+        buy_count = db.execute(text("""
+            SELECT COUNT(*)
+            FROM paper_trades
+            WHERE side = 'BUY'
+        """)).scalar()
+
+        sell_count = db.execute(text("""
+            SELECT COUNT(*)
+            FROM paper_trades
+            WHERE side = 'SELL'
+        """)).scalar()
+
         open_position_value = 0.0
-
-        if latest_price:
-            buy_count = db.execute(text("""
-                SELECT COUNT(*)
-                FROM paper_trades
-                WHERE side = 'BUY'
-            """)).scalar()
-
-            sell_count = db.execute(text("""
-                SELECT COUNT(*)
-                FROM paper_trades
-                WHERE side = 'SELL'
-            """)).scalar()
-
-            if buy_count > sell_count:
-                open_position_value = settings.max_position_eur
+        if buy_count > sell_count:
+            open_position_value = settings.max_position_eur
 
         portfolio_value = cash_balance + open_position_value
         portfolio_pnl = portfolio_value - settings.paper_start_balance_eur
         portfolio_growth_percent = (
             portfolio_pnl / settings.paper_start_balance_eur
         ) * 100
+
+        performance = db.execute(text("""
+            WITH ordered_trades AS (
+                SELECT
+                    id,
+                    side,
+                    amount_eur,
+                    price,
+                    ROW_NUMBER() OVER (ORDER BY id) AS rn
+                FROM paper_trades
+                WHERE market = 'BTC-EUR'
+            ),
+            matched_trades AS (
+                SELECT
+                    ((sell.price - buy.price) / buy.price) * buy.amount_eur AS pnl_eur
+                FROM ordered_trades buy
+                JOIN ordered_trades sell
+                    ON sell.rn = buy.rn + 1
+                WHERE buy.side = 'BUY'
+                  AND sell.side = 'SELL'
+            )
+            SELECT
+                COUNT(*) AS closed_trades,
+                COALESCE(SUM(pnl_eur), 0) AS total_pnl_eur,
+                COALESCE(AVG(pnl_eur), 0) AS avg_pnl_eur,
+                COALESCE(SUM(CASE WHEN pnl_eur > 0 THEN 1 ELSE 0 END), 0) AS winning_trades
+            FROM matched_trades
+        """)).fetchone()
+
+        closed_trades = performance[0]
+        total_pnl_eur = float(performance[1])
+        avg_pnl_eur = float(performance[2])
+        winning_trades = performance[3]
+
+        if closed_trades > 0:
+            winrate = (winning_trades / closed_trades) * 100
+        else:
+            winrate = 0.0
+
+        risk_decision = RiskManager().evaluate(
+            RiskContext(
+                paper_trading=settings.paper_trading,
+                has_open_position=buy_count > sell_count,
+                daily_loss=0.0,
+                max_daily_loss=settings.max_daily_loss_eur,
+                cooldown_active=False,
+                position_size=settings.max_position_eur,
+                max_position_size=settings.max_position_eur,
+            )
+        )
+
+        status_file = Path("/tmp/trading_loop_status.txt")
+        if status_file.exists():
+            last_loop_run = status_file.read_text().strip()
+        else:
+            last_loop_run = None
 
         return templates.TemplateResponse(
             request=request,
@@ -333,10 +377,15 @@ async def dashboard(request: Request):
                 "portfolio_value": portfolio_value,
                 "portfolio_pnl": portfolio_pnl,
                 "portfolio_growth_percent": portfolio_growth_percent,
+                "closed_trades": closed_trades,
+                "total_pnl_eur": total_pnl_eur,
+                "avg_pnl_eur": avg_pnl_eur,
+                "winrate": winrate,
             },
         )
     finally:
         db.close()
+
 
 @app.post("/trade/{market}/test-sell")
 async def test_sell_trade(market: str):
