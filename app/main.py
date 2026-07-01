@@ -1,3 +1,4 @@
+from app.analytics.portfolio import calculate_portfolio
 from app.analytics.performance import calculate_performance
 from pathlib import Path
 from app.trading_loop import trading_loop
@@ -265,43 +266,14 @@ async def dashboard(request: Request):
             FROM paper_trades
         """)).scalar()
 
-        buys_total = db.execute(text("""
-            SELECT COALESCE(SUM(amount_eur), 0)
-            FROM paper_trades
-            WHERE side = 'BUY'
-        """)).scalar()
+        portfolio = calculate_portfolio(db, settings)
 
-        sells_total = db.execute(text("""
-            SELECT COALESCE(SUM(amount_eur), 0)
-            FROM paper_trades
-            WHERE side = 'SELL'
-        """)).scalar()
-
-        cash_balance = (
-            settings.paper_start_balance_eur - float(buys_total) + float(sells_total)
-        )
-
-        buy_count = db.execute(text("""
-            SELECT COUNT(*)
-            FROM paper_trades
-            WHERE side = 'BUY'
-        """)).scalar()
-
-        sell_count = db.execute(text("""
-            SELECT COUNT(*)
-            FROM paper_trades
-            WHERE side = 'SELL'
-        """)).scalar()
-
-        open_position_value = 0.0
-        if buy_count > sell_count:
-            open_position_value = settings.max_position_eur
-
-        portfolio_value = cash_balance + open_position_value
-        portfolio_pnl = portfolio_value - settings.paper_start_balance_eur
-        portfolio_growth_percent = (
-            portfolio_pnl / settings.paper_start_balance_eur
-        ) * 100
+        cash_balance = portfolio["cash_balance"]
+        open_position_value = portfolio["open_position_value"]
+        portfolio_value = portfolio["portfolio_value"]
+        portfolio_pnl = portfolio["portfolio_pnl"]
+        portfolio_growth_percent = portfolio["portfolio_growth_percent"]
+        has_open_position = portfolio["has_open_position"]
 
         performance = calculate_performance(db)
 
@@ -313,7 +285,7 @@ async def dashboard(request: Request):
         risk_decision = RiskManager().evaluate(
             RiskContext(
                 paper_trading=settings.paper_trading,
-                has_open_position=buy_count > sell_count,
+                has_open_position=has_open_position,
                 daily_loss=0.0,
                 max_daily_loss=settings.max_daily_loss_eur,
                 cooldown_active=False,
