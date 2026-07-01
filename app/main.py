@@ -1,3 +1,4 @@
+from app.analytics.statistics import calculate_statistics
 from app.analytics.trade_history import get_latest_trades
 from app.analytics.equity import calculate_equity_points, calculate_equity_summary
 from app.analytics.portfolio import calculate_portfolio
@@ -282,6 +283,7 @@ async def dashboard(request: Request):
         performance = calculate_performance(db)
         equity_points = calculate_equity_points(db, settings)
         equity_summary = calculate_equity_summary(equity_points)
+        statistics = calculate_statistics(db)
 
         closed_trades = performance["closed_trades"]
         total_pnl_eur = performance["total_pnl_eur"]
@@ -332,6 +334,7 @@ async def dashboard(request: Request):
                 "equity_points": equity_points,
                 "equity_summary": equity_summary,
                 "latest_trades": latest_trades,
+                "statistics": statistics,
             },
         )
     finally:

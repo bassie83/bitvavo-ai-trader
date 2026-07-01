@@ -107,6 +107,31 @@
         </div>
 
         <div class="card">
+            <h2>Statistics</h2>
+
+            <p>Winning trades</p>
+            <p>{{ statistics["winning_trades"] }}</p>
+
+            <p>Losing trades</p>
+            <p>{{ statistics["losing_trades"] }}</p>
+
+            <p>Profit factor</p>
+            <p class="big">{{ "%.2f"|format(statistics["profit_factor"]) }}</p>
+
+            <p>Average winner</p>
+            <p>€{{ "%.2f"|format(statistics["avg_winner"]) }}</p>
+
+            <p>Average loser</p>
+            <p>€{{ "%.2f"|format(statistics["avg_loser"]) }}</p>
+
+            <p>Best trade</p>
+            <p>€{{ "%.2f"|format(statistics["best_trade"]) }}</p>
+
+            <p>Worst trade</p>
+            <p>€{{ "%.2f"|format(statistics["worst_trade"]) }}</p>
+        </div>
+
+        <div class="card">
             <h2>Laatste Trades</h2>
 
             {% if latest_trades %}
