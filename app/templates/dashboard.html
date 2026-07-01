@@ -18,6 +18,16 @@
             color: #38bdf8;
         }
 
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .stat-grid p {
+            margin: 4px 0;
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -36,6 +46,31 @@
             border: 1px solid #334155;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
             transition: transform 0.2s ease;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 420px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .kpi {
+            min-height: 120px;
+        }
+
+        .kpi p {
+            margin: 6px 0;
+        }
+
+        .kpi .big {
+            font-size: 2rem;
+        }
+
+        .kpi-label {
+            font-weight: 700;
+            color: #cbd5e1;
+            letter-spacing: 0.02em;
         }
 
         .card:hover {
@@ -59,6 +94,33 @@
             overflow-x: auto;
         }
 
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #334155;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-status {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .hero-status span {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+
         .ok {
             color: #22c55e;
             font-weight: bold;
@@ -78,10 +140,54 @@
 
 <body>
 
-    <h1>🚀 Project Atlas</h1>
-    <p class="muted">Dashboard v1</p>
+    <div class="hero">
+        <div>
+            <h1>🚀 Project Atlas</h1>
+            <p class="muted">AI Paper Trading Dashboard</p>
+        </div>
+
+        <div class="hero-status">
+            <span>BTC-EUR</span>
+            <span class="ok">● Running</span>
+            <span>Paper Trading</span>
+
+            {% if last_loop_run %}
+            <span>Heartbeat: {{ last_loop_run }}</span>
+            {% else %}
+            <span>Heartbeat: onbekend</span>
+            {% endif %}
+        </div>
+    </div>
 
     <div class="grid">
+        <div class="card kpi">
+            <p class="kpi-label">💼 Portfolio</p>
+            <p class="big">€{{ "%.2f"|format(portfolio_value) }}</p>
+            <p class="muted">Current value</p>
+        </div>
+
+        <div class="card kpi">
+            <p class="kpi-label">📈 Resultaat</p>
+            <p class="big">€{{ "%.2f"|format(total_pnl_eur) }}</p>
+            <p class="muted">{{ "%.2f"|format(performance_growth_percent) }}%</p>
+        </div>
+
+        <div class="card kpi">
+            <p class="kpi-label">🎯 Winrate</p>
+            <p class="big">{{ "%.2f"|format(winrate) }}%</p>
+            <p class="muted">{{ closed_trades }} closed trades</p>
+        </div>
+
+        <div class="card kpi">
+            <p class="kpi-label">📌 Open positie</p>
+            {% if open_position_value > 0 %}
+            <p class="big ok">Ja</p>
+            <p class="muted">BTC-EUR active</p>
+            {% else %}
+            <p class="big muted">Nee</p>
+            <p class="muted">No open position</p>
+            {% endif %}
+        </div>
 
         <div class="card">
             <h2>Portfolio</h2>
@@ -120,29 +226,45 @@
         <div class="card">
             <h2>Statistics</h2>
 
-            <p>Winning trades</p>
-            <p>{{ statistics["winning_trades"] }}</p>
+            <div class="stat-grid">
+                <div>
+                    <p class="muted">Winning trades</p>
+                    <p class="big ok">{{ statistics["winning_trades"] }}</p>
+                </div>
 
-            <p>Losing trades</p>
-            <p>{{ statistics["losing_trades"] }}</p>
+                <div>
+                    <p class="muted">Losing trades</p>
+                    <p class="big">{{ statistics["losing_trades"] }}</p>
+                </div>
 
-            <p>Profit factor</p>
-            <p class="big">{{ "%.2f"|format(statistics["profit_factor"]) }}</p>
+                <div>
+                    <p class="muted">Profit factor</p>
+                    <p class="big">{{ "%.2f"|format(statistics["profit_factor"]) }}</p>
+                </div>
 
-            <p>Average winner</p>
-            <p>€{{ "%.2f"|format(statistics["avg_winner"]) }}</p>
+                <div>
+                    <p class="muted">Best trade</p>
+                    <p>€{{ "%.2f"|format(statistics["best_trade"]) }}</p>
+                </div>
 
-            <p>Average loser</p>
-            <p>€{{ "%.2f"|format(statistics["avg_loser"]) }}</p>
+                <div>
+                    <p class="muted">Average winner</p>
+                    <p>€{{ "%.2f"|format(statistics["avg_winner"]) }}</p>
+                </div>
 
-            <p>Best trade</p>
-            <p>€{{ "%.2f"|format(statistics["best_trade"]) }}</p>
+                <div>
+                    <p class="muted">Average loser</p>
+                    <p>€{{ "%.2f"|format(statistics["avg_loser"]) }}</p>
+                </div>
 
-            <p>Worst trade</p>
-            <p>€{{ "%.2f"|format(statistics["worst_trade"]) }}</p>
+                <div>
+                    <p class="muted">Worst trade</p>
+                    <p>€{{ "%.2f"|format(statistics["worst_trade"]) }}</p>
+                </div>
+            </div>
         </div>
 
-        <div class="card card-wide">
+        <div class="card">
             <h2>Laatste Trades</h2>
 
             {% if latest_trades %}
@@ -317,7 +439,9 @@
             {% else %}
             <p class="muted">Nog geen gesloten trades.</p>
             {% endif %}
-            <canvas id="equityChart"></canvas>
+            <div class="chart-container">
+                <canvas id="equityChart"></canvas>
+            </div>
         </div>
 
     </div>
@@ -338,15 +462,18 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: "Equity (€)",
+                        label: "Portfolio Equity (€)",
                         data: values,
-                        tension: 0.25,
+                        tension: 0.35,
+                        borderWidth: 3,
                         pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointHoverRadius: 8,
+                        fill: true
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             display: true
