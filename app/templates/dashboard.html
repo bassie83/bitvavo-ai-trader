@@ -45,6 +45,7 @@
             font-weight: bold;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -210,10 +211,40 @@
             {% else %}
             <p class="muted">Nog geen gesloten trades.</p>
             {% endif %}
+            <canvas id="equityChart"></canvas>
         </div>
 
     </div>
+    <script>
+        const equityPoints = {{ equity_points | tojson }};
 
+        if (equityPoints.length > 0) {
+            const labels = equityPoints.map(point => `Trade ${point.trade_id}`);
+            const values = equityPoints.map(point => point.equity);
+
+            const ctx = document.getElementById("equityChart");
+
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Equity (€)",
+                        data: values,
+                        tension: 0.25
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
