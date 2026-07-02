@@ -10,6 +10,7 @@ def analyze_macd(macd: dict) -> dict:
             "indicator": "MACD",
             "bias": "bullish",
             "message": "MACD shows bullish momentum.",
+            "weight": 0.35,
         }
 
     if histogram < 0:
@@ -17,10 +18,12 @@ def analyze_macd(macd: dict) -> dict:
             "indicator": "MACD",
             "bias": "bearish",
             "message": "MACD shows bearish momentum.",
+            "weight": 0.35,
         }
 
     return {
         "indicator": "MACD",
         "bias": "neutral",
         "message": "MACD momentum is neutral.",
+        "weight": 0.35,
     }

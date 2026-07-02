@@ -346,6 +346,8 @@
                     {% endif %}
                     <br>
                     <strong>Consensus Score:</strong> {{ technical["brain"]["consensus"] }}%
+                    <br>
+                    <strong>Weighted Score:</strong> {{ "%.2f"|format(technical["brain"].get("weighted_score", 0)) }}
                 </p>
             </div>
 

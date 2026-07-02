@@ -15,6 +15,7 @@ def analyze_rsi(rsi: float) -> dict:
             "zone": "oversold",
             "bias": "bullish",
             "message": "RSI is oversold. This may indicate bullish reversal potential.",
+            "weight": 0.40,
         }
 
     if rsi > 70:
@@ -24,6 +25,7 @@ def analyze_rsi(rsi: float) -> dict:
             "zone": "overbought",
             "bias": "bearish",
             "message": "RSI is overbought. This may indicate bearish reversal risk.",
+            "weight": 0.40,
         }
 
     return {
@@ -32,4 +34,5 @@ def analyze_rsi(rsi: float) -> dict:
         "zone": "neutral",
         "bias": "neutral",
         "message": "RSI is neutral. No strong RSI-based signal detected.",
+        "weight": 0.40,
     }
