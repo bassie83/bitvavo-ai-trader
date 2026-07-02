@@ -253,6 +253,8 @@
 
             <p class="big">{{ atlas_brain["action"] }}</p>
 
+            <p><strong>Brain Score:</strong> {{ atlas_brain["brain_score"] }}%</p>
+
             <p>
                 <strong>Bias:</strong> {{ atlas_brain["bias"] }}<br>
                 <strong>Message:</strong> {{ atlas_brain["message"] }}
@@ -262,8 +264,8 @@
 
             <h3>Reasoning</h3>
             <ul class="reason-list">
-                {% for reason in atlas_brain["reasons"] %}
-                <li>{{ reason }}</li>
+                {% for item in atlas_brain["score_breakdown"] %}
+                <li>{{ item }}</li>
                 {% endfor %}
             </ul>
         </div>
