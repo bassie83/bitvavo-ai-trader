@@ -7,11 +7,13 @@ def analyze_technical_brain(rsi: dict, macd: dict) -> dict:
         return {
             "bias": rsi["bias"],
             "agreement": True,
+            "consensus": 100,
             "message": f"RSI and MACD are both {rsi['bias']}.",
         }
 
     return {
         "bias": "neutral",
         "agreement": False,
+        "consensus": 50,
         "message": "RSI and MACD do not agree.",
     }
