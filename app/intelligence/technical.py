@@ -1,12 +1,18 @@
 from app.strategies.indicators import calculate_trend_score
 from app.intelligence.rsi import analyze_rsi
 from app.intelligence.macd import analyze_macd
+from app.intelligence.technical_brain import analyze_technical_brain
 
 
 def get_technical_intelligence(market: str = "BTC-EUR") -> dict:
     analysis = calculate_trend_score(market)
     rsi_value = analysis.get("rsi")
     macd_value = analysis.get("macd", {})
+
+    brain = analyze_technical_brain(
+        analyze_rsi(rsi_value),
+        analyze_macd(macd_value),
+    )
 
     return {
         "ready": analysis.get("ready", False),
@@ -17,4 +23,5 @@ def get_technical_intelligence(market: str = "BTC-EUR") -> dict:
         "macd": macd_value,
         "macd_analysis": analyze_macd(macd_value),
         "reason": analysis.get("reason", ""),
+        "brain": brain,
     }
