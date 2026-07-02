@@ -305,6 +305,11 @@
                     <strong>Action:</strong> {{ atlas_brain["action"] }}
                 </p>
                 <p>{{ atlas_brain["message"] }}</p>
+                <ul>
+                    {% for reason in atlas_brain["reasons"] %}
+                    <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
             </div>
 
             <div class="intelligence-section">

@@ -11,6 +11,11 @@ def analyze_brain(technical: dict, sentiment: dict) -> dict:
             "bias": "cautious_bullish",
             "action": "BUY",
             "message": "Technicals are bullish while market sentiment remains fearful.",
+            "reasons": [
+                "Technical indicators are bullish.",
+                "Market sentiment is fearful.",
+                "Fearful sentiment may create a cautious buying opportunity.",
+            ],
         }
 
     if technical_bias == "bearish" and sentiment_value > 60:
@@ -18,10 +23,19 @@ def analyze_brain(technical: dict, sentiment: dict) -> dict:
             "bias": "cautious_bearish",
             "action": "SELL",
             "message": "Technicals are bearish while market sentiment remains greedy.",
+            "reasons": [
+                "Technical indicators are bearish.",
+                "Market sentiment is greedy.",
+                "Greedy sentiment may increase downside risk.",
+            ],
         }
 
     return {
         "bias": technical_bias,
         "action": "HOLD",
         "message": "Technical and sentiment are aligned.",
+        "reasons": [
+            "No strong conflict detected between technicals and sentiment.",
+            "Atlas keeps a neutral risk posture.",
+        ],
     }
