@@ -18,86 +18,13 @@
             color: #38bdf8;
         }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
+        h2 {
+            margin-top: 0;
         }
 
-        .stat-grid p {
-            margin: 4px 0;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 24px;
-            margin-top: 24px;
-        }
-
-        .card-wide {
-            grid-column: 1 / -1;
-        }
-
-        .card {
-            background: #1e293b;
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid #334155;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-            transition: transform 0.2s ease;
-        }
-
-        hr {
-            border: 0;
-            border-top: 1px solid #334155;
-            margin: 16px 0;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 420px;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .kpi {
-            min-height: 120px;
-        }
-
-        .kpi p {
-            margin: 6px 0;
-        }
-
-        .kpi .big {
-            font-size: 2rem;
-        }
-
-        .kpi-label {
-            font-weight: 700;
-            color: #cbd5e1;
-            letter-spacing: 0.02em;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 4px 6px;
-            white-space: nowrap;
-        }
-
-        .card {
-            overflow-x: auto;
+        h3 {
+            margin-bottom: 10px;
+            color: #e2e8f0;
         }
 
         .hero {
@@ -127,13 +54,37 @@
             font-size: 0.9rem;
         }
 
-        .ok {
-            color: #22c55e;
-            font-weight: bold;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
         }
 
-        .muted {
-            color: #94a3b8;
+        .card {
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            overflow-x: auto;
+        }
+
+        .card-wide {
+            grid-column: 1 / -1;
+        }
+
+        .kpi {
+            min-height: 120px;
+        }
+
+        .kpi p {
+            margin: 6px 0;
+        }
+
+        .kpi-label {
+            font-weight: 700;
+            color: #cbd5e1;
         }
 
         .big {
@@ -141,13 +92,19 @@
             font-weight: bold;
         }
 
-        .intelligence-section h3 {
-            margin: 0 0 10px 0;
-            color: #e2e8f0;
+        .muted {
+            color: #94a3b8;
         }
 
-        .intelligence-section p {
-            margin: 6px 0;
+        .ok {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #334155;
+            margin: 16px 0;
         }
 
         .badge {
@@ -181,6 +138,11 @@
             line-height: 1.6;
         }
 
+        .reason-list {
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+
         .breakdown-list {
             list-style: none;
             padding: 0;
@@ -194,8 +156,38 @@
             padding: 6px 0;
             border-bottom: 1px solid rgba(51, 65, 85, 0.6);
         }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .stat-grid p {
+            margin: 4px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 6px;
+            white-space: nowrap;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 420px;
+            width: 100%;
+            margin-top: 20px;
         }
     </style>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -220,12 +212,13 @@
         </div>
     </div>
 
-    <div class="card card-wide briefing-card">
-        <h2>🧠 {{ briefing["title"] }}</h2>
-        <p class="briefing-text">{{ briefing["message"] }}</p>
-    </div>
-
     <div class="grid">
+
+        <div class="card card-wide">
+            <h2>🧠 {{ briefing["title"] }}</h2>
+            <p class="briefing-text">{{ briefing["message"] }}</p>
+        </div>
+
         <div class="card kpi">
             <p class="kpi-label">💼 Portfolio</p>
             <p class="big">€{{ "%.2f"|format(portfolio_value) }}</p>
@@ -256,115 +249,109 @@
         </div>
 
         <div class="card">
-            <h2>🧠 Market Intelligence</h2>
+            <h2>🧠 Atlas Brain</h2>
 
-            <div class="intelligence-section">
-                <h3>😨 Market Sentiment</h3>
-                <p class="big">
-                    {{ fear_greed["value"] }}
-                    <span class="muted">({{ fear_greed["classification"] }})</span>
-                </p>
-            </div>
+            <p class="big">{{ atlas_brain["action"] }}</p>
 
-            <hr>
-
-            <div class="intelligence-section">
-                <h3>🎯 Confidence</h3>
-
-                <p class="big">{{ confidence["score"] }}%</p>
-
-                <p>
-                    {% if confidence["level"] == "HIGH" %}
-                    <span class="badge badge-high">🟢 HIGH</span>
-                    {% elif confidence["level"] == "MEDIUM" %}
-                    <span class="badge badge-medium">🟡 MEDIUM</span>
-                    {% else %}
-                    <span class="badge badge-low">🔴 LOW</span>
-                    {% endif %}
-                </p>
-
-                <ul class="breakdown-list">
-                    {% for item in confidence["breakdown"] %}
-                    <li>
-                        <span>{{ item["name"] }}</span>
-                        <span class="muted">{{ item["description"] }}</span>
-                        <strong>{{ item["impact"] }}</strong>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <p>
+                <strong>Bias:</strong> {{ atlas_brain["bias"] }}<br>
+                <strong>Message:</strong> {{ atlas_brain["message"] }}
+            </p>
 
             <hr>
 
-            <hr>
-
-            <div class="intelligence-section">
-                <h3>🧠 Atlas Brain</h3>
-                <p>
-                    <strong>Bias:</strong> {{ atlas_brain["bias"] }}<br>
-                    <strong>Action:</strong> {{ atlas_brain["action"] }}
-                </p>
-                <p>{{ atlas_brain["message"] }}</p>
-                <ul>
-                    {% for reason in atlas_brain["reasons"] %}
-                    <li>{{ reason }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="intelligence-section">
-                <h3>📊 Technical Analysis</h3>
-
-                <p>
-                    <strong>Score:</strong> {{ technical["score"] }}/100<br>
-                    <strong>Advies:</strong> {{ technical["advice"] }}
-                </p>
-
-                <hr>
-
-                <p>
-                    <strong>RSI:</strong> {{ technical["rsi"] }}<br>
-                    <strong>RSI Bias:</strong> {{ technical["rsi_analysis"]["bias"] }}<br>
-                    <strong>RSI Zone:</strong> {{ technical["rsi_analysis"]["zone"] }}
-                </p>
-
-                <hr>
-
-                <p>
-                    <strong>MACD Bias:</strong> {{ technical["macd_analysis"]["bias"] }}
-                </p>
-
-                <hr>
-
-                <p>
-                    <strong>Technical Brain:</strong> {{ technical["brain"]["bias"] }}<br>
-                    <strong>Consensus:</strong>
-                    {% if technical["brain"]["agreement"] %}
-                    Yes
-                    {% else %}
-                    No
-                    {% endif %}
-                    <br>
-                    <strong>Consensus Score:</strong> {{ technical["brain"]["consensus"] }}%
-                    <br>
-                    <strong>Weighted Score:</strong> {{ "%.2f"|format(technical["brain"].get("weighted_score", 0)) }}
-                </p>
-            </div>
-
-            <hr>
-
-            <div class="intelligence-section">
-                <h3>🧠 Atlas Insight</h3>
-                <p>
-                    <strong>{{ market_insight["bias"] }}</strong><br>
-                    {{ market_insight["message"] }}<br><br>
-                    <span class="muted">{{ market_insight["position_note"] }}</span>
-                </p>
-            </div>
+            <h3>Reasoning</h3>
+            <ul class="reason-list">
+                {% for reason in atlas_brain["reasons"] %}
+                <li>{{ reason }}</li>
+                {% endfor %}
+            </ul>
         </div>
 
         <div class="card">
-            <h2>Portfolio</h2>
+            <h2>📊 Technical Analysis</h2>
+
+            <p>
+                <strong>Score:</strong> {{ technical["score"] }}/100<br>
+                <strong>Advies:</strong> {{ technical["advice"] }}
+            </p>
+
+            <hr>
+
+            <p>
+                <strong>RSI:</strong> {{ technical["rsi"] }}<br>
+                <strong>RSI Bias:</strong> {{ technical["rsi_analysis"]["bias"] }}<br>
+                <strong>RSI Zone:</strong> {{ technical["rsi_analysis"]["zone"] }}
+            </p>
+
+            <hr>
+
+            <p>
+                <strong>MACD Bias:</strong> {{ technical["macd_analysis"]["bias"] }}
+            </p>
+
+            <hr>
+
+            <p>
+                <strong>Technical Brain:</strong> {{ technical["brain"]["bias"] }}<br>
+                <strong>Consensus:</strong>
+                {% if technical["brain"]["agreement"] %}
+                Yes
+                {% else %}
+                No
+                {% endif %}
+                <br>
+                <strong>Consensus Score:</strong> {{ technical["brain"]["consensus"] }}%<br>
+                <strong>Weighted Score:</strong> {{ "%.2f"|format(technical["brain"].get("weighted_score", 0)) }}
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>😨 Market Sentiment</h2>
+
+            <p class="big">
+                {{ fear_greed["value"] }}
+                <span class="muted">({{ fear_greed["classification"] }})</span>
+            </p>
+
+            <hr>
+
+            <h3>Confidence</h3>
+            <p class="big">{{ confidence["score"] }}%</p>
+
+            <p>
+                {% if confidence["level"] == "HIGH" %}
+                <span class="badge badge-high">🟢 HIGH</span>
+                {% elif confidence["level"] == "MEDIUM" %}
+                <span class="badge badge-medium">🟡 MEDIUM</span>
+                {% else %}
+                <span class="badge badge-low">🔴 LOW</span>
+                {% endif %}
+            </p>
+
+            <ul class="breakdown-list">
+                {% for item in confidence["breakdown"] %}
+                <li>
+                    <span>{{ item["name"] }}</span>
+                    <span class="muted">{{ item["description"] }}</span>
+                    <strong>{{ item["impact"] }}</strong>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>🧠 Atlas Insight</h2>
+
+            <p>
+                <strong>{{ market_insight["bias"] }}</strong><br>
+                {{ market_insight["message"] }}<br><br>
+                <span class="muted">{{ market_insight["position_note"] }}</span>
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>Portfolio Details</h2>
 
             <p>Huidige waarde</p>
             <p class="big">€{{ "%.2f"|format(portfolio_value) }}</p>
@@ -438,7 +425,42 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card card-wide">
+            <h2>Equity</h2>
+
+            <p>Current</p>
+            <p class="big">€{{ "%.2f"|format(equity_summary["current"]) }}</p>
+
+            <p>Highest</p>
+            <p>€{{ "%.2f"|format(equity_summary["highest"]) }}</p>
+
+            <p>Lowest</p>
+            <p>€{{ "%.2f"|format(equity_summary["lowest"]) }}</p>
+
+            <hr>
+
+            {% if equity_points %}
+            {% set last_equity = equity_points[-1]["equity"] %}
+            {% set last_pnl = equity_points[-1]["pnl"] %}
+
+            <p>Laatste equity</p>
+            <p class="big">€{{ "%.2f"|format(last_equity) }}</p>
+
+            <p>Laatste gesloten trade</p>
+            <p>€{{ "%.2f"|format(last_pnl) }}</p>
+
+            <p>Datapunten</p>
+            <p>{{ equity_points|length }}</p>
+            {% else %}
+            <p class="muted">Nog geen gesloten trades.</p>
+            {% endif %}
+
+            <div class="chart-container">
+                <canvas id="equityChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card card-wide">
             <h2>Laatste Trades</h2>
 
             {% if latest_trades %}
@@ -501,19 +523,6 @@
         </div>
 
         <div class="card">
-            <h2>Systeemstatus</h2>
-            <p>Bot: <span class="ok">Running</span></p>
-
-            <p>
-                Paper Trading:
-                {% if paper_trading %}
-                <span class="ok">Enabled</span>
-                {% else %}
-                Disabled
-                {% endif %}
-            </p>
-        </div>
-        <div class="card">
             <h2>Risk Manager</h2>
 
             {% if risk_decision.allowed %}
@@ -524,6 +533,21 @@
 
             <p>Allowed: {{ risk_decision.allowed }}</p>
             <p class="muted">{{ risk_decision.reason }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Systeemstatus</h2>
+
+            <p>Bot: <span class="ok">Running</span></p>
+
+            <p>
+                Paper Trading:
+                {% if paper_trading %}
+                <span class="ok">Enabled</span>
+                {% else %}
+                Disabled
+                {% endif %}
+            </p>
         </div>
 
         <div class="card">
@@ -539,25 +563,17 @@
             {% endif %}
         </div>
 
-
         <div class="card">
             <h2>Laatste Signaal</h2>
 
             {% if latest_signal %}
             <p class="big">{{ latest_signal[2] }}</p>
-
             <p>Market: {{ latest_signal[1] }}</p>
-
             <p>Confidence: {{ latest_signal[3] }}</p>
-
             <p class="muted">{{ latest_signal[4] }}</p>
-
             <p class="muted">{{ latest_signal[5] }}</p>
-
             {% else %}
-
             <p class="muted">Nog geen signalen.</p>
-
             {% endif %}
         </div>
 
@@ -565,60 +581,19 @@
             <h2>Laatste Paper Trade</h2>
 
             {% if latest_trade %}
-
             <p class="big">{{ latest_trade[2] }}</p>
-
             <p>Market: {{ latest_trade[1] }}</p>
-
             <p>Amount: €{{ latest_trade[3] }}</p>
-
             <p>Price: {{ latest_trade[4] }}</p>
-
             <p>Executed: {{ latest_trade[5] }}</p>
-
             <p class="muted">{{ latest_trade[6] }}</p>
-
             {% else %}
-
             <p class="muted">Nog geen paper trades.</p>
-
             {% endif %}
-        </div>
-
-        <div class="card card-wide">
-            <h2>Equity</h2>
-            <p>Current</p>
-            <p class="big">€{{ "%.2f"|format(equity_summary["current"]) }}</p>
-
-            <p>Highest</p>
-            <p>€{{ "%.2f"|format(equity_summary["highest"]) }}</p>
-
-            <p>Lowest</p>
-            <p>€{{ "%.2f"|format(equity_summary["lowest"]) }}</p>
-
-            <hr>
-
-            {% if equity_points %}
-            {% set last_equity = equity_points[-1]["equity"] %}
-            {% set last_pnl = equity_points[-1]["pnl"] %}
-
-            <p>Laatste equity</p>
-            <p class="big">€{{ "%.2f"|format(last_equity) }}</p>
-
-            <p>Laatste gesloten trade</p>
-            <p>€{{ "%.2f"|format(last_pnl) }}</p>
-
-            <p>Datapunten</p>
-            <p>{{ equity_points|length }}</p>
-            {% else %}
-            <p class="muted">Nog geen gesloten trades.</p>
-            {% endif %}
-            <div class="chart-container">
-                <canvas id="equityChart"></canvas>
-            </div>
         </div>
 
     </div>
+
     <script>
         const equityPoints = {{ equity_points | tojson }};
 
@@ -668,6 +643,7 @@
             });
         }
     </script>
+
 </body>
 
 </html>
