@@ -1,3 +1,4 @@
+from app.intelligence.confidence import calculate_confidence
 from app.intelligence.decision import generate_market_insight
 from app.intelligence.fear_greed import get_fear_greed
 from app.analytics.statistics import calculate_statistics
@@ -293,7 +294,13 @@ async def dashboard(request: Request):
         winrate = performance["winrate"]
         performance_growth_percent = performance["growth_percent"]
         fear_greed = get_fear_greed()
+
         market_insight = generate_market_insight(
+            fear_greed=fear_greed,
+            has_open_position=has_open_position,
+        )
+
+        confidence = calculate_confidence(
             fear_greed=fear_greed,
             has_open_position=has_open_position,
         )
@@ -346,6 +353,7 @@ async def dashboard(request: Request):
                 "statistics": statistics,
                 "fear_greed": fear_greed,
                 "market_insight": market_insight,
+                "confidence": confidence,
             },
         )
     finally:
