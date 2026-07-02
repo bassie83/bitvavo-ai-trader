@@ -1,4 +1,5 @@
 from app.strategies.indicators import calculate_trend_score
+from app.intelligence.rsi import analyze_rsi
 
 
 def get_technical_intelligence(market: str = "BTC-EUR") -> dict:
