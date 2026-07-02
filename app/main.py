@@ -1,3 +1,4 @@
+from app.intelligence.decision import generate_market_insight
 from app.intelligence.fear_greed import get_fear_greed
 from app.analytics.statistics import calculate_statistics
 from app.analytics.trade_history import get_latest_trades
@@ -292,6 +293,10 @@ async def dashboard(request: Request):
         winrate = performance["winrate"]
         performance_growth_percent = performance["growth_percent"]
         fear_greed = get_fear_greed()
+        market_insight = generate_market_insight(
+            fear_greed=fear_greed,
+            has_open_position=has_open_position,
+        )
 
         risk_decision = RiskManager().evaluate(
             RiskContext(
@@ -340,6 +345,7 @@ async def dashboard(request: Request):
                 "latest_trades": latest_trades,
                 "statistics": statistics,
                 "fear_greed": fear_greed,
+                "market_insight": market_insight,
             },
         )
     finally:

@@ -48,6 +48,12 @@
             transition: transform 0.2s ease;
         }
 
+        hr {
+            border: 0;
+            border-top: 1px solid #334155;
+            margin: 16px 0;
+        }
+
         .chart-container {
             position: relative;
             height: 420px;
@@ -189,10 +195,29 @@
             {% endif %}
         </div>
 
-        <div class="card kpi">
-            <p class="kpi-label">😨 Fear & Greed</p>
-            <p class="big">{{ fear_greed["value"] }}</p>
-            <p class="muted">{{ fear_greed["classification"] }}</p>
+        <div class="card">
+            <h2>🧠 Market Intelligence</h2>
+
+            <p class="kpi-label">Fear & Greed</p>
+
+            <p class="big">
+                {{ fear_greed["value"] }}
+                <span class="muted">
+                    ({{ fear_greed["classification"] }})
+                </span>
+            </p>
+
+            <hr>
+
+            <p class="muted">AI Insight</p>
+
+            <p>
+                <strong>{{ market_insight["bias"] }}</strong>
+                <br>
+                {{ market_insight["message"] }}
+                <br><br>
+                <span class="muted">{{ market_insight["position_note"] }}</span>
+            </p>
         </div>
 
         <div class="card">
