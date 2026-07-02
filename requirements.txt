@@ -8,3 +8,4 @@ redis
 psycopg[binary]
 sqlalchemy
 jinja2
+requests

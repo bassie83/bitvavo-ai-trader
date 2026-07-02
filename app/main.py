@@ -1,3 +1,4 @@
+from app.intelligence.fear_greed import get_fear_greed
 from app.analytics.statistics import calculate_statistics
 from app.analytics.trade_history import get_latest_trades
 from app.analytics.equity import calculate_equity_points, calculate_equity_summary
@@ -289,6 +290,8 @@ async def dashboard(request: Request):
         total_pnl_eur = performance["total_pnl_eur"]
         avg_pnl_eur = performance["avg_pnl_eur"]
         winrate = performance["winrate"]
+        performance_growth_percent = performance["growth_percent"]
+        fear_greed = get_fear_greed()
 
         risk_decision = RiskManager().evaluate(
             RiskContext(
@@ -331,10 +334,12 @@ async def dashboard(request: Request):
                 "total_pnl_eur": total_pnl_eur,
                 "avg_pnl_eur": avg_pnl_eur,
                 "winrate": winrate,
+                "performance_growth_percent": performance_growth_percent,
                 "equity_points": equity_points,
                 "equity_summary": equity_summary,
                 "latest_trades": latest_trades,
                 "statistics": statistics,
+                "fear_greed": fear_greed,
             },
         )
     finally:
