@@ -296,12 +296,49 @@
 
             <hr>
 
+            <hr>
+
+            <div class="intelligence-section">
+                <h3>🧠 Atlas Brain</h3>
+                <p>
+                    <strong>Bias:</strong> {{ atlas_brain["bias"] }}<br>
+                    <strong>Action:</strong> {{ atlas_brain["action"] }}
+                </p>
+                <p>{{ atlas_brain["message"] }}</p>
+            </div>
+
             <div class="intelligence-section">
                 <h3>📊 Technical Analysis</h3>
+
                 <p>
                     <strong>Score:</strong> {{ technical["score"] }}/100<br>
-                    <strong>Advies:</strong> {{ technical["advice"] }}<br>
-                    <strong>RSI:</strong> {{ technical["rsi"] }}
+                    <strong>Advies:</strong> {{ technical["advice"] }}
+                </p>
+
+                <hr>
+
+                <p>
+                    <strong>RSI:</strong> {{ technical["rsi"] }}<br>
+                    <strong>RSI Bias:</strong> {{ technical["rsi_analysis"]["bias"] }}<br>
+                    <strong>RSI Zone:</strong> {{ technical["rsi_analysis"]["zone"] }}
+                </p>
+
+                <hr>
+
+                <p>
+                    <strong>MACD Bias:</strong> {{ technical["macd_analysis"]["bias"] }}
+                </p>
+
+                <hr>
+
+                <p>
+                    <strong>Technical Brain:</strong> {{ technical["brain"]["bias"] }}<br>
+                    <strong>Consensus:</strong>
+                    {% if technical["brain"]["agreement"] %}
+                    Yes
+                    {% else %}
+                    No
+                    {% endif %}
                 </p>
             </div>
 
