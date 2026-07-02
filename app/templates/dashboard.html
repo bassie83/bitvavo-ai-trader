@@ -140,6 +140,15 @@
             font-size: 28px;
             font-weight: bold;
         }
+
+        .intelligence-section h3 {
+            margin: 0 0 10px 0;
+            color: #e2e8f0;
+        }
+
+        .intelligence-section p {
+            margin: 6px 0;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -198,26 +207,42 @@
         <div class="card">
             <h2>🧠 Market Intelligence</h2>
 
-            <p class="kpi-label">Fear & Greed</p>
-
-            <p class="big">
-                {{ fear_greed["value"] }}
-                <span class="muted">
-                    ({{ fear_greed["classification"] }})
-                </span>
-            </p>
+            <div class="intelligence-section">
+                <h3>😨 Market Sentiment</h3>
+                <p class="big">
+                    {{ fear_greed["value"] }}
+                    <span class="muted">({{ fear_greed["classification"] }})</span>
+                </p>
+            </div>
 
             <hr>
 
-            <p class="muted">AI Insight</p>
+            <div class="intelligence-section">
+                <h3>🎯 Confidence</h3>
+                <p class="big">{{ confidence["score"] }}%</p>
+            </div>
 
-            <p>
-                <strong>{{ market_insight["bias"] }}</strong>
-                <br>
-                {{ market_insight["message"] }}
-                <br><br>
-                <span class="muted">{{ market_insight["position_note"] }}</span>
-            </p>
+            <hr>
+
+            <div class="intelligence-section">
+                <h3>📊 Technical Analysis</h3>
+                <p>
+                    <strong>Score:</strong> {{ technical["score"] }}/100<br>
+                    <strong>Advies:</strong> {{ technical["advice"] }}<br>
+                    <strong>RSI:</strong> {{ technical["rsi"] }}
+                </p>
+            </div>
+
+            <hr>
+
+            <div class="intelligence-section">
+                <h3>🧠 Atlas Insight</h3>
+                <p>
+                    <strong>{{ market_insight["bias"] }}</strong><br>
+                    {{ market_insight["message"] }}<br><br>
+                    <span class="muted">{{ market_insight["position_note"] }}</span>
+                </p>
+            </div>
         </div>
 
         <div class="card">

@@ -1,4 +1,8 @@
-def calculate_confidence(fear_greed: dict, has_open_position: bool) -> dict:
+def calculate_confidence(
+    fear_greed: dict,
+    has_open_position: bool,
+    technical: dict,
+) -> dict:
     score = 50
     factors = []
 
@@ -26,6 +30,20 @@ def calculate_confidence(fear_greed: dict, has_open_position: bool) -> dict:
         )
     else:
         factors.append("Er is geen open positie.")
+
+    technical_score = technical.get("score", 0)
+
+    if technical_score >= 80:
+        score += 20
+        factors.append("Technische analyse is sterk bullish.")
+    elif technical_score >= 60:
+        score += 10
+        factors.append("Technische analyse ondersteunt een BUY.")
+    elif technical_score >= 40:
+        factors.append("Technische analyse is neutraal.")
+    else:
+        score -= 10
+        factors.append("Technische analyse is zwak.")
 
     score = max(0, min(100, score))
 

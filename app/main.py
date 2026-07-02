@@ -1,3 +1,4 @@
+from app.intelligence.technical import get_technical_intelligence
 from app.intelligence.confidence import calculate_confidence
 from app.intelligence.decision import generate_market_insight
 from app.intelligence.fear_greed import get_fear_greed
@@ -294,6 +295,8 @@ async def dashboard(request: Request):
         winrate = performance["winrate"]
         performance_growth_percent = performance["growth_percent"]
         fear_greed = get_fear_greed()
+        fear_greed = get_fear_greed()
+        technical = get_technical_intelligence("BTC-EUR")
 
         market_insight = generate_market_insight(
             fear_greed=fear_greed,
@@ -303,8 +306,8 @@ async def dashboard(request: Request):
         confidence = calculate_confidence(
             fear_greed=fear_greed,
             has_open_position=has_open_position,
+            technical=technical,
         )
-
         risk_decision = RiskManager().evaluate(
             RiskContext(
                 paper_trading=settings.paper_trading,
@@ -354,6 +357,7 @@ async def dashboard(request: Request):
                 "fear_greed": fear_greed,
                 "market_insight": market_insight,
                 "confidence": confidence,
+                "technical": technical,
             },
         )
     finally:
