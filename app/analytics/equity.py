@@ -49,3 +49,20 @@ def calculate_equity_points(db, settings, market: str = "BTC-EUR") -> list[dict]
             open_amount_eur = None
 
     return points
+
+
+def calculate_equity_summary(equity_points: list[dict]) -> dict:
+    values = [point["equity"] for point in equity_points]
+
+    if not values:
+        return {
+            "current": 0.0,
+            "highest": 0.0,
+            "lowest": 0.0,
+        }
+
+    return {
+        "current": values[-1],
+        "highest": max(values),
+        "lowest": min(values),
+    }

@@ -1,3 +1,4 @@
+from app.intelligence.briefing import generate_daily_briefing
 from app.intelligence.technical import get_technical_intelligence
 from app.intelligence.confidence import calculate_confidence
 from app.intelligence.decision import generate_market_insight
@@ -308,6 +309,13 @@ async def dashboard(request: Request):
             has_open_position=has_open_position,
             technical=technical,
         )
+
+        briefing = generate_daily_briefing(
+            fear_greed=fear_greed,
+            technical=technical,
+            confidence=confidence,
+            has_open_position=has_open_position,
+        )
         risk_decision = RiskManager().evaluate(
             RiskContext(
                 paper_trading=settings.paper_trading,
@@ -358,6 +366,7 @@ async def dashboard(request: Request):
                 "market_insight": market_insight,
                 "confidence": confidence,
                 "technical": technical,
+                "briefing": briefing,
             },
         )
     finally:

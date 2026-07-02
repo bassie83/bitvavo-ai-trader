@@ -40,6 +40,7 @@ def calculate_performance(db, market: str = "BTC-EUR") -> dict:
 
     if closed_trades > 0:
         winrate = (winning_trades / closed_trades) * 100
+        growth_percent = (total_pnl_eur / 1000.0) * 100
     else:
         winrate = 0.0
 
@@ -48,4 +49,5 @@ def calculate_performance(db, market: str = "BTC-EUR") -> dict:
         "total_pnl_eur": total_pnl_eur,
         "avg_pnl_eur": avg_pnl_eur,
         "winrate": winrate,
+        "growth_percent": growth_percent,
     }

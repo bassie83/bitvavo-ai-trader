@@ -149,6 +149,52 @@
         .intelligence-section p {
             margin: 6px 0;
         }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .badge-high {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.35);
+        }
+
+        .badge-medium {
+            background: rgba(234, 179, 8, 0.15);
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.35);
+        }
+
+        .badge-low {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+
+        .briefing-text {
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+
+        .breakdown-list {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0 0 0;
+        }
+
+        .breakdown-list li {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 16px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+        }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -172,6 +218,11 @@
             <span>Heartbeat: onbekend</span>
             {% endif %}
         </div>
+    </div>
+
+    <div class="card card-wide briefing-card">
+        <h2>🧠 {{ briefing["title"] }}</h2>
+        <p class="briefing-text">{{ briefing["message"] }}</p>
     </div>
 
     <div class="grid">
@@ -219,7 +270,28 @@
 
             <div class="intelligence-section">
                 <h3>🎯 Confidence</h3>
+
                 <p class="big">{{ confidence["score"] }}%</p>
+
+                <p>
+                    {% if confidence["level"] == "HIGH" %}
+                    <span class="badge badge-high">🟢 HIGH</span>
+                    {% elif confidence["level"] == "MEDIUM" %}
+                    <span class="badge badge-medium">🟡 MEDIUM</span>
+                    {% else %}
+                    <span class="badge badge-low">🔴 LOW</span>
+                    {% endif %}
+                </p>
+
+                <ul class="breakdown-list">
+                    {% for item in confidence["breakdown"] %}
+                    <li>
+                        <span>{{ item["name"] }}</span>
+                        <span class="muted">{{ item["description"] }}</span>
+                        <strong>{{ item["impact"] }}</strong>
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
 
             <hr>
