@@ -1,3 +1,10 @@
+from app.intelligence.scoring import score_sentiment
+from app.intelligence.scoring import (
+    score_sentiment,
+    score_technical_bias,
+)
+
+
 def calculate_brain_score(technical: dict, sentiment: dict) -> dict:
     """
     Calculate Atlas Brain score from technical and sentiment inputs.
@@ -10,32 +17,17 @@ def calculate_brain_score(technical: dict, sentiment: dict) -> dict:
     consensus = technical.get("consensus", 50)
     sentiment_value = sentiment.get("value", 50)
 
-    if technical_bias == "bullish":
-        score += 20
-        score_breakdown.append("+20 Technical bias is bullish.")
+    technical_score, technical_reason = score_technical_bias(technical_bias)
+    score += technical_score
+    score_breakdown.append(f"{technical_score:+d} {technical_reason}")
 
-    elif technical_bias == "bearish":
-        score -= 20
-        score_breakdown.append("-20 Technical bias is bearish.")
+    consensus_score, consensus_reason = score_consensus(consensus)
+    score += consensus_score
+    score_breakdown.append(f"{consensus_score:+d} {consensus_reason}")
 
-    else:
-        score_breakdown.append("+0 Technical bias is neutral.")
-
-    if consensus >= 75:
-        score += 15
-        score_breakdown.append("+15 Technical consensus is strong.")
-    elif consensus <= 50:
-        score -= 5
-        score_breakdown.append("-5 Technical consensus is weak.")
-
-    if sentiment_value < 40:
-        score += 10
-        score_breakdown.append("+10 Market sentiment is fearful.")
-    elif sentiment_value > 60:
-        score -= 10
-        score_breakdown.append("-10 Market sentiment is greedy.")
-    else:
-        score_breakdown.append("+0 Market sentiment is neutral.")
+    sentiment_score, sentiment_reason = score_sentiment(sentiment_value)
+    score += sentiment_score
+    score_breakdown.append(f"{sentiment_score:+d} {sentiment_reason}")
 
     score = max(0, min(100, score))
 
@@ -43,3 +35,17 @@ def calculate_brain_score(technical: dict, sentiment: dict) -> dict:
         "score": score,
         "score_breakdown": score_breakdown,
     }
+
+
+def score_consensus(consensus: int) -> tuple[int, str]:
+    """
+    Score technical consensus between -5 and +15.
+    """
+
+    if consensus >= 75:
+        return 15, "Technical consensus is strong."
+
+    if consensus <= 50:
+        return -5, "Technical consensus is weak."
+
+    return 0, "Technical consensus is neutral."
