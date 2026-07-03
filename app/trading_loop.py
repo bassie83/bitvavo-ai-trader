@@ -8,25 +8,37 @@ from app.risk.manager import RiskManager
 from app.risk.models import RiskContext
 from app.strategies.signal_engine import generate_combined_signal
 from app.trading_executor import execute_paper_trade
+from app.intelligence.technical import get_technical_intelligence
+from app.intelligence.fear_greed import get_fear_greed
+from app.intelligence.brain import analyze_brain
+from app.intelligence.execution_plan import build_execution_plan
+
 
 def has_open_position(market: str) -> bool:
     db = SessionLocal()
     try:
-        buys = db.execute(text("""
+        buys = db.execute(
+            text("""
             SELECT COUNT(*)
             FROM paper_trades
             WHERE market = :market AND side = 'BUY'
-        """), {"market": market}).scalar()
+        """),
+            {"market": market},
+        ).scalar()
 
-        sells = db.execute(text("""
+        sells = db.execute(
+            text("""
             SELECT COUNT(*)
             FROM paper_trades
             WHERE market = :market AND side = 'SELL'
-        """), {"market": market}).scalar()
+        """),
+            {"market": market},
+        ).scalar()
 
         return buys > sells
     finally:
         db.close()
+
 
 async def trading_loop():
     """
@@ -43,6 +55,24 @@ async def trading_loop():
                 status_file.write(datetime.utcnow().isoformat())
 
             signal = generate_combined_signal(market)
+            technical = get_technical_intelligence(market)
+            fear_greed = get_fear_greed()
+
+            brain = analyze_brain(
+                technical=technical["brain"],
+                sentiment=fear_greed,
+                has_open_position=has_open_position(market),
+                risk_allowed=True,  # vervangen we straks door de echte RiskManager-uitkomst
+            )
+
+            execution_plan = build_execution_plan(
+                market=market,
+                decision=brain["decision"],
+                max_position_eur=settings.max_position_eur,
+            )
+
+            print(f"🧠 Atlas Decision: {brain['decision']}", flush=True)
+            print(f"📋 Execution Plan: {execution_plan}", flush=True)
 
             if signal.signal == "HOLD":
                 print("⏸️ Trading loop: HOLD signal, no trade", flush=True)
@@ -58,8 +88,7 @@ async def trading_loop():
                 RiskContext(
                     paper_trading=settings.paper_trading,
                     has_open_position=(
-                        signal.signal == "BUY"
-                        and has_open_position(market)
+                        signal.signal == "BUY" and has_open_position(market)
                     ),
                     daily_loss=0.0,
                     max_daily_loss=settings.max_daily_loss_eur,
