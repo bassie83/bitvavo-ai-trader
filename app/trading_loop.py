@@ -2,12 +2,13 @@ from sqlalchemy import text
 from app.database.session import SessionLocal
 import asyncio
 from datetime import datetime
+
 from app.core.settings import settings
 from app.exchange.bitvavo_public import get_ticker_price
 from app.risk.manager import RiskManager
 from app.risk.models import RiskContext
-from app.strategies.signal_engine import generate_combined_signal
 from app.trading_executor import execute_paper_trade
+
 from app.intelligence.technical import get_technical_intelligence
 from app.intelligence.fear_greed import get_fear_greed
 from app.intelligence.brain import analyze_brain
@@ -42,7 +43,7 @@ def has_open_position(market: str) -> bool:
 
 async def trading_loop():
     """
-    Automatische paper trading-loop.
+    Automated paper trading loop powered by the Atlas pipeline.
     """
 
     while True:
@@ -54,15 +55,16 @@ async def trading_loop():
             with open("/tmp/trading_loop_status.txt", "w") as status_file:
                 status_file.write(datetime.utcnow().isoformat())
 
-            signal = generate_combined_signal(market)
+            open_position = has_open_position(market)
+
             technical = get_technical_intelligence(market)
             fear_greed = get_fear_greed()
 
             brain = analyze_brain(
                 technical=technical["brain"],
                 sentiment=fear_greed,
-                has_open_position=has_open_position(market),
-                risk_allowed=True,  # vervangen we straks door de echte RiskManager-uitkomst
+                has_open_position=open_position,
+                risk_allowed=True,
             )
 
             execution_plan = build_execution_plan(
@@ -71,16 +73,16 @@ async def trading_loop():
                 max_position_eur=settings.max_position_eur,
             )
 
-            print(f"🧠 Atlas Decision: {brain['decision']}", flush=True)
+            print(f"🧠 Atlas Brain: {brain}", flush=True)
             print(f"📋 Execution Plan: {execution_plan}", flush=True)
 
-            if signal.signal == "HOLD":
-                print("⏸️ Trading loop: HOLD signal, no trade", flush=True)
+            if execution_plan["action"] == "HOLD":
+                print("⏸️ Trading loop: Execution Plan is HOLD, no trade", flush=True)
                 await asyncio.sleep(60)
                 continue
 
-            if signal.signal == "SELL" and not has_open_position(market):
-                print("⏸️ Trading loop: SELL signal, but no open position", flush=True)
+            if execution_plan["action"] == "SELL" and not open_position:
+                print("⏸️ Trading loop: SELL plan, but no open position", flush=True)
                 await asyncio.sleep(60)
                 continue
 
@@ -88,12 +90,12 @@ async def trading_loop():
                 RiskContext(
                     paper_trading=settings.paper_trading,
                     has_open_position=(
-                        signal.signal == "BUY" and has_open_position(market)
+                        execution_plan["action"] == "BUY" and open_position
                     ),
                     daily_loss=0.0,
                     max_daily_loss=settings.max_daily_loss_eur,
                     cooldown_active=False,
-                    position_size=settings.max_position_eur,
+                    position_size=execution_plan["amount_eur"],
                     max_position_size=settings.max_position_eur,
                 )
             )
@@ -109,8 +111,8 @@ async def trading_loop():
             price_data = await get_ticker_price(market)
 
             trade = execute_paper_trade(
-                market=market,
-                side=signal.signal,
+                market=execution_plan["market"],
+                side=execution_plan["action"],
                 price=float(price_data["price"]),
             )
 
