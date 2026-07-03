@@ -27,34 +27,25 @@ def analyze_brain(
     if technical_bias == "bullish" and sentiment_value < 40:
         return {
             "bias": "cautious_bullish",
-            "action": decision["action"],
-            "confidence": decision["confidence"],
             "message": "Technicals are bullish while market sentiment remains fearful.",
             "brain_score": brain_score,
             "score_breakdown": brain_breakdown,
-            "blocked": decision["blocked"],
-            "decision_reason": decision["reason"],
+            "decision": decision,
         }
 
     if technical_bias == "bearish" and sentiment_value > 60:
         return {
             "bias": "cautious_bearish",
-            "action": decision["action"],
-            "confidence": decision["confidence"],
             "message": "Technicals are bearish while market sentiment remains greedy.",
             "brain_score": brain_score,
             "score_breakdown": brain_breakdown,
-            "blocked": decision["blocked"],
-            "decision_reason": decision["reason"],
+            "decision": decision,
         }
 
     return {
         "bias": technical_bias,
-        "action": decision["action"],
-        "confidence": decision["confidence"],
         "message": "Technical and sentiment are aligned.",
         "brain_score": brain_score,
         "score_breakdown": brain_breakdown,
-        "blocked": decision["blocked"],
-        "decision_reason": decision["reason"],
+        "decision": decision,
     }
