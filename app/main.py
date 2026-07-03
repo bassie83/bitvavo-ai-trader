@@ -1,3 +1,5 @@
+from app.intelligence.brain import analyze_brain
+from app.intelligence.brain import analyze_brain
 from app.intelligence.briefing import generate_daily_briefing
 from app.intelligence.technical import get_technical_intelligence
 from app.intelligence.confidence import calculate_confidence
@@ -296,7 +298,6 @@ async def dashboard(request: Request):
         winrate = performance["winrate"]
         performance_growth_percent = performance["growth_percent"]
         fear_greed = get_fear_greed()
-        fear_greed = get_fear_greed()
         technical = get_technical_intelligence("BTC-EUR")
 
         market_insight = generate_market_insight(
@@ -326,6 +327,13 @@ async def dashboard(request: Request):
                 position_size=settings.max_position_eur,
                 max_position_size=settings.max_position_eur,
             )
+        )
+
+        atlas_brain = analyze_brain(
+            technical=technical["brain"],
+            sentiment=fear_greed,
+            has_open_position=has_open_position,
+            risk_allowed=risk_decision.allowed,
         )
 
         status_file = Path("/tmp/trading_loop_status.txt")
@@ -367,6 +375,7 @@ async def dashboard(request: Request):
                 "confidence": confidence,
                 "technical": technical,
                 "briefing": briefing,
+                "atlas_brain": atlas_brain,
             },
         )
     finally:
