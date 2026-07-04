@@ -1,3 +1,5 @@
+from app.intelligence.market_context import build_market_context
+from app.intelligence.brain import analyze_market_context
 from app.intelligence.brain import analyze_brain
 from app.intelligence.brain import analyze_brain
 from app.intelligence.briefing import generate_daily_briefing
@@ -329,12 +331,16 @@ async def dashboard(request: Request):
             )
         )
 
-        atlas_brain = analyze_brain(
-            technical=technical["brain"],
+        market_context = build_market_context(
+            market="BTC-EUR",
+            technical=technical,
             sentiment=fear_greed,
-            has_open_position=has_open_position,
-            risk_allowed=risk_decision.allowed,
+            news={},
+            portfolio={"has_open_position": has_open_position},
+            risk={"allowed": risk_decision.allowed},
         )
+
+        atlas_brain = analyze_market_context(market_context)
 
         status_file = Path("/tmp/trading_loop_status.txt")
         if status_file.exists():

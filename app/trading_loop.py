@@ -1,3 +1,5 @@
+from app.intelligence.market_context import build_market_context
+from app.intelligence.brain import analyze_market_context
 from sqlalchemy import text
 from app.database.session import SessionLocal
 import asyncio
@@ -60,12 +62,16 @@ async def trading_loop():
             technical = get_technical_intelligence(market)
             fear_greed = get_fear_greed()
 
-            brain = analyze_brain(
-                technical=technical["brain"],
+            market_context = build_market_context(
+                market=market,
+                technical=technical,
                 sentiment=fear_greed,
-                has_open_position=open_position,
-                risk_allowed=True,
+                news={},
+                portfolio={"has_open_position": open_position},
+                risk={"allowed": True},
             )
+
+            brain = analyze_market_context(market_context)
 
             execution_plan = build_execution_plan(
                 market=market,

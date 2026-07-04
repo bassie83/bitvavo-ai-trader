@@ -49,3 +49,18 @@ def analyze_brain(
         "score_breakdown": brain_breakdown,
         "decision": decision,
     }
+
+
+def analyze_market_context(context) -> dict:
+    """
+    Analyze a complete MarketContext.
+
+    Compatibility wrapper around analyze_brain().
+    """
+
+    return analyze_brain(
+        technical=context.technical["brain"],
+        sentiment=context.sentiment,
+        has_open_position=context.portfolio["has_open_position"],
+        risk_allowed=context.risk["allowed"],
+    )
