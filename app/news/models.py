@@ -1,4 +1,14 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+
+@dataclass
+class NewsAnalysis:
+    summary: str
+    sentiment: str
+    impact: str
+    confidence: int
+    affected_assets: list[str] = field(default_factory=list)
+    reasoning: list[str] = field(default_factory=list)
 
 
 @dataclass

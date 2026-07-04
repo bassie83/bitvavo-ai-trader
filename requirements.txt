@@ -10,3 +10,4 @@ sqlalchemy
 jinja2
 requests
 feedparser==6.0.12
+openai
