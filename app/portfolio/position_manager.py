@@ -12,9 +12,13 @@ def get_position_summary(market: str) -> dict:
     try:
         buys = db.execute(
             text("""
-                SELECT COUNT(*), COALESCE(SUM(amount_eur), 0)
+                SELECT
+                    COUNT(*),
+                    COALESCE(SUM(amount_eur), 0),
+                    COALESCE(AVG(price), 0)
                 FROM paper_trades
-                WHERE market = :market AND side = 'BUY'
+                WHERE market = :market
+                AND side = 'BUY'
             """),
             {"market": market},
         ).first()
@@ -30,6 +34,7 @@ def get_position_summary(market: str) -> dict:
 
         buy_count = buys[0]
         total_bought_eur = float(buys[1])
+        average_entry_price = float(buys[2])
 
         sell_count = sells[0]
         total_sold_eur = float(sells[1])
@@ -44,6 +49,7 @@ def get_position_summary(market: str) -> dict:
             "open_position_count": open_position_count,
             "exposure_eur": exposure_eur,
             "has_open_position": open_position_count > 0,
+            "average_entry_price": average_entry_price,
         }
 
     finally:
