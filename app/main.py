@@ -1,3 +1,5 @@
+from app.news.collector import get_latest_news
+from app.news.ai_analyzer import analyze_news_article
 from app.intelligence.market_context import build_market_context
 from app.intelligence.brain import analyze_market_context
 from app.intelligence.brain import analyze_brain
@@ -331,11 +333,18 @@ async def dashboard(request: Request):
             )
         )
 
+        articles = get_latest_news(1)
+
+        if articles:
+            news = analyze_news_article(articles[0])
+        else:
+            news = None
+
         market_context = build_market_context(
             market="BTC-EUR",
             technical=technical,
             sentiment=fear_greed,
-            news={},
+            news=news,
             portfolio={"has_open_position": has_open_position},
             risk={"allowed": risk_decision.allowed},
         )

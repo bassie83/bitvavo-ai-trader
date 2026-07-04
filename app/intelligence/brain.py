@@ -58,9 +58,25 @@ def analyze_market_context(context) -> dict:
     Compatibility wrapper around analyze_brain().
     """
 
-    return analyze_brain(
+    brain = analyze_brain(
         technical=context.technical["brain"],
         sentiment=context.sentiment,
         has_open_position=context.portfolio["has_open_position"],
         risk_allowed=context.risk["allowed"],
     )
+
+    news = context.news
+
+    if news:
+        brain["news"] = {
+            "summary": news.summary,
+            "sentiment": news.sentiment,
+            "impact": news.impact,
+            "confidence": news.confidence,
+            "affected_assets": news.affected_assets,
+            "reasoning": news.reasoning,
+        }
+
+        brain["score_breakdown"].append(f"+0 News sentiment is {news.sentiment}.")
+
+    return brain
